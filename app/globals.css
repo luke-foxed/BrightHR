@@ -21,7 +21,7 @@ body {
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: #ccc
+  background: #fff
 }
 
 @media screen and (max-width: 600px) {
