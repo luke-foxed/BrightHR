@@ -45,5 +45,25 @@
         "added": "2015-04-24"
       }
     ]
+  },
+  {
+    "type": "pdf",
+    "name": "New Hires",
+    "added": "2018-11-06"
+  },
+  {
+    "type": "csv",
+    "name": "Squad Breakdown",
+    "added": "2023-04-06"
+  },
+  {
+    "type": "png",
+    "name": "Team Outing",
+    "added": "2022-06-11"
+  },
+  {
+    "type": "zip",
+    "name": "January Reports",
+    "added": "2024-01-03"
   }
 ]
