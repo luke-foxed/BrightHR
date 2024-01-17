@@ -7,7 +7,8 @@
     "react/react-in-jsx-scope": "off",
     "react/no-unescaped-entities": "off",
     "react/jsx-filename-extension": "off",
-    "react/prop-types": "off", // forgive me
-    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }]
+    "react/prop-types": "off",
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "import/no-extraneous-dependencies": "off"
   }
 }
