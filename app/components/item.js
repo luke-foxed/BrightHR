@@ -18,6 +18,7 @@ function Item({ itemData, onItemClick }) {
         <Grid container direction="column" item alignItems="center" justifyContent="center">
           <ItemIcon type={type} />
           <Typography>{name}</Typography>
+          <Typography>{type}</Typography>
           <Typography>{added}</Typography>
         </Grid>
       </StyledItemButton>

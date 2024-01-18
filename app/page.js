@@ -1,19 +1,10 @@
 'use client'
 
 import useSWR from 'swr'
-import {
-  Typography,
-  Grid,
-  styled,
-  Box,
-  Autocomplete,
-  TextField,
-  Button,
-  Select,
-  MenuItem,
-} from '@mui/material'
+import { Typography, Grid, styled, Box, Button } from '@mui/material'
 import { useEffect, useState } from 'react'
 import Item from './components/item'
+import ItemSortSearch from './components/item_sort_search'
 
 const StyledContainerBox = styled(Box)({
   display: 'grid',
@@ -40,7 +31,7 @@ export default function Home() {
   const { data, isLoading } = useSWR('/api/folders', fetcher)
   const [folderInView, setFolderInView] = useState(null)
   const [searchString, setSearchString] = useState('')
-  const [sorting, setSorting] = useState({ field: 'name', order: 'asc' })
+  const [sorting, setSorting] = useState({ field: 'name', order: 'ascending' })
   const [sortedItems, setSortedItems] = useState([])
 
   useEffect(() => {
@@ -56,14 +47,16 @@ export default function Home() {
     }
 
     if (items && field !== '') {
-      if (field === 'name') {
-        items = items.sort((a, b) => (order === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)))
+      if (field === 'name' || field === 'type') {
+        items = items.sort((a, b) => (order === 'ascending'
+          ? a[field].localeCompare(b[field])
+          : b[field].localeCompare(a[field])))
       } else if (field === 'date') {
         items = items.sort((a, b) => {
           // if we have no date (folders), put them at the start or end of the list
           const dateA = a.added ? new Date(a.added) : new Date(0)
           const dateB = b.added ? new Date(b.added) : new Date(0)
-          return order === 'asc' ? dateA - dateB : dateB - dateA
+          return order === 'ascending' ? dateA - dateB : dateB - dateA
         })
       }
     }
@@ -76,12 +69,12 @@ export default function Home() {
     setSearchString(item ?? '')
   }
 
-  const handleChangeSorting = (event, key) => {
+  const handleChangeSorting = (option, key) => {
     if (key === 'field') {
-      setSorting({ ...sorting, field: event.target.value })
+      setSorting({ ...sorting, field: option.value })
     }
     if (key === 'order') {
-      setSorting({ ...sorting, order: event.target.value })
+      setSorting({ ...sorting, order: option.value })
     }
   }
 
@@ -110,54 +103,13 @@ export default function Home() {
                 <div />
               </Grid>
             )}
-            <Grid container alignItems="center" spacing={2}>
-              <Grid
-                item
-                xs={12}
-                sm={12}
-                md={6}
-                justifyContent={{ xs: 'center', sm: 'center', md: 'flex-end' }}
-              >
-                <Autocomplete
-                  freeSolo
-                  options={sortedItems.map((item) => item.name)}
-                  onInputChange={(_, val) => handleSearchChange(val)}
-                  renderInput={(params) => (
-                    <TextField
-                      onChange={(e) => handleSearchChange(e.target.value)}
-                      {...params}
-                      label="Search Items..."
-                    />
-                  )}
-                />
-              </Grid>
 
-              <Grid
-                container
-                item
-                xs={12}
-                sm={12}
-                md={6}
-                justifyContent={{ xs: 'center', sm: 'center', md: 'flex-end' }}
-              >
-                <Select
-                  sx={{ minWidth: '150px' }}
-                  value={sorting.field}
-                  onChange={(e) => handleChangeSorting(e, 'field')}
-                >
-                  <MenuItem value="name">Name</MenuItem>
-                  <MenuItem value="date">Date</MenuItem>
-                </Select>
-                <Select
-                  sx={{ minWidth: '150px' }}
-                  value={sorting.order}
-                  onChange={(e) => handleChangeSorting(e, 'order')}
-                >
-                  <MenuItem value="asc">Ascending</MenuItem>
-                  <MenuItem value="desc">Descending</MenuItem>
-                </Select>
-              </Grid>
-            </Grid>
+            <ItemSortSearch
+              items={sortedItems}
+              sorting={sorting}
+              onChangeSearch={handleSearchChange}
+              onChangeSort={handleChangeSorting}
+            />
 
             <Grid container alignItems="center" justifyContent="flex-start">
               {sortedItems.map((item) => (
