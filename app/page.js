@@ -1,7 +1,17 @@
 'use client'
 
 import useSWR from 'swr'
-import { Typography, Grid, styled, Box, Autocomplete, TextField, Button, Select, MenuItem } from '@mui/material'
+import {
+  Typography,
+  Grid,
+  styled,
+  Box,
+  Autocomplete,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+} from '@mui/material'
 import { useEffect, useState } from 'react'
 import Item from './components/item'
 
@@ -27,15 +37,14 @@ const StyledItemBox = styled(Box)({
 const fetcher = (url) => fetch(url).then((r) => r.json())
 
 export default function Home() {
-  // eslint-disable-next-line no-unused-vars
-  const { data, error, isLoading } = useSWR('/api/folders', fetcher)
+  const { data, isLoading } = useSWR('/api/folders', fetcher)
   const [folderInView, setFolderInView] = useState(null)
   const [searchString, setSearchString] = useState('')
   const [sorting, setSorting] = useState({ field: 'name', order: 'asc' })
   const [sortedItems, setSortedItems] = useState([])
 
   useEffect(() => {
-    const { field } = sorting
+    const { field, order } = sorting
     let items = data?.folders ? [...data.folders] : []
 
     if (folderInView?.files) {
@@ -48,13 +57,13 @@ export default function Home() {
 
     if (items && field !== '') {
       if (field === 'name') {
-        items = items.sort((a, b) => a.name.localeCompare(b.name))
+        items = items.sort((a, b) => (order === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)))
       } else if (field === 'date') {
         items = items.sort((a, b) => {
-          // if there is no date (i.e. folders, give them a value of 0 to appear at top of list
+          // if we have no date (folders), put them at the start or end of the list
           const dateA = a.added ? new Date(a.added) : new Date(0)
           const dateB = b.added ? new Date(b.added) : new Date(0)
-          return dateA - dateB
+          return order === 'asc' ? dateA - dateB : dateB - dateA
         })
       }
     }
@@ -67,8 +76,13 @@ export default function Home() {
     setSearchString(item ?? '')
   }
 
-  const handleChangeSorting = (event) => {
-    setSorting({ ...sorting, field: event.target.value })
+  const handleChangeSorting = (event, key) => {
+    if (key === 'field') {
+      setSorting({ ...sorting, field: event.target.value })
+    }
+    if (key === 'order') {
+      setSorting({ ...sorting, order: event.target.value })
+    }
   }
 
   const handleItemClick = (item) => {
@@ -96,26 +110,55 @@ export default function Home() {
                 <div />
               </Grid>
             )}
-            <Grid container item alignItems="center" justifyContent="space-between">
-              <Autocomplete
-                sx={{ width: '300px' }}
-                freeSolo
-                options={sortedItems.map((item) => item.name)}
-                onInputChange={(_, val) => handleSearchChange(val)}
-                renderInput={(params) => (
-                  <TextField
-                    onChange={(e) => handleSearchChange(e.target.value)}
-                    {...params}
-                    label="Search Items..."
-                  />
-                )}
-              />
+            <Grid container alignItems="center" spacing={2}>
+              <Grid
+                item
+                xs={12}
+                sm={12}
+                md={6}
+                justifyContent={{ xs: 'center', sm: 'center', md: 'flex-end' }}
+              >
+                <Autocomplete
+                  freeSolo
+                  options={sortedItems.map((item) => item.name)}
+                  onInputChange={(_, val) => handleSearchChange(val)}
+                  renderInput={(params) => (
+                    <TextField
+                      onChange={(e) => handleSearchChange(e.target.value)}
+                      {...params}
+                      label="Search Items..."
+                    />
+                  )}
+                />
+              </Grid>
 
-              <Select value={sorting.field} onChange={handleChangeSorting}>
-                <MenuItem value="name">Name</MenuItem>
-                <MenuItem value="date">Date</MenuItem>
-              </Select>
+              <Grid
+                container
+                item
+                xs={12}
+                sm={12}
+                md={6}
+                justifyContent={{ xs: 'center', sm: 'center', md: 'flex-end' }}
+              >
+                <Select
+                  sx={{ minWidth: '150px' }}
+                  value={sorting.field}
+                  onChange={(e) => handleChangeSorting(e, 'field')}
+                >
+                  <MenuItem value="name">Name</MenuItem>
+                  <MenuItem value="date">Date</MenuItem>
+                </Select>
+                <Select
+                  sx={{ minWidth: '150px' }}
+                  value={sorting.order}
+                  onChange={(e) => handleChangeSorting(e, 'order')}
+                >
+                  <MenuItem value="asc">Ascending</MenuItem>
+                  <MenuItem value="desc">Descending</MenuItem>
+                </Select>
+              </Grid>
             </Grid>
+
             <Grid container alignItems="center" justifyContent="flex-start">
               {sortedItems.map((item) => (
                 <Item
