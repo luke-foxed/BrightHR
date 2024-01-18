@@ -8,7 +8,7 @@
     "react/no-unescaped-entities": "off",
     "react/jsx-filename-extension": "off",
     "react/prop-types": "off",
-    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "react/jsx-props-no-spreading": "off", // MUI makes use of prop spreading in some places
     "import/no-extraneous-dependencies": "off"
   }
 }
