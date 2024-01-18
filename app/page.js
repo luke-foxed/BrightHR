@@ -2,7 +2,7 @@
 
 import useSWR from 'swr'
 import { Typography, Grid, styled, Box, Button } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Item from './components/item'
 import ItemSortSearch from './components/item_sort_search'
 
@@ -33,42 +33,49 @@ export default function Home() {
   const [searchString, setSearchString] = useState('')
   const [sorting, setSorting] = useState({ field: 'name', order: 'ascend' })
   const [filters, setFilters] = useState([])
-  const [treatedItems, setTreatedItems] = useState([])
 
-  useEffect(() => {
+  // this function is doing a lot of heavy lifting to apply all types of sorting and filtering
+  // available - it's been setup this way to allow for all filters/sorting to work with each other
+  const filteredItems = useMemo(() => {
     const { field, order } = sorting
     let items = data?.folders ? [...data.folders] : []
 
+    // firstly, if we are inside a folder, limit the items to only those
     if (folderInView?.files) {
       items = [...folderInView.files]
     }
 
-    if (items && searchString !== '') {
+    // then filter the items based on a search string if it exists
+    if (searchString !== '') {
       items = items.filter((item) => item.name.toLowerCase().includes(searchString.toLowerCase()))
     }
 
-    if (items && field !== '') {
-      if (field === 'name' || field === 'type') {
-        items = items.sort((a, b) => (order === 'ascend'
-          ? a[field].localeCompare(b[field])
-          : b[field].localeCompare(a[field])))
-      } else if (field === 'date') {
-        items = items.sort((a, b) => {
-          // if we have no date (folders), put them at the start or end of the list
-          const dateA = a.added ? new Date(a.added) : new Date(0)
-          const dateB = b.added ? new Date(b.added) : new Date(0)
-          return order === 'ascend' ? dateA - dateB : dateB - dateA
-        })
-      }
+    // then sort alphabetically on name or type - or sort by date
+    if (field === 'name' || field === 'type') {
+      items = items.sort((a, b) => (order === 'ascend'
+        ? a[field].localeCompare(b[field])
+        : b[field].localeCompare(a[field])))
+    } else if (field === 'date') {
+      items = items.sort((a, b) => {
+        const dateA = a.added ? new Date(a.added) : new Date(0)
+        const dateB = b.added ? new Date(b.added) : new Date(0)
+        return order === 'ascend' ? dateA - dateB : dateB - dateA
+      })
     }
 
+    // then, if there are file type filters, apply those
     if (filters.length > 0) {
       const typesToFilter = filters.map((filter) => filter.value)
       items = items.filter((item) => typesToFilter.includes(item.type))
     }
 
-    setTreatedItems([...items])
-  }, [data?.folders, folderInView?.files, filters, searchString, sorting, sorting.field])
+    return items
+  }, [data?.folders, folderInView?.files, filters, searchString, sorting])
+
+  // to keep track of all the file types we can filter off even when we've already applied filtering
+  const uniqueTypes = [...new Set(data?.folders.map((item) => item.type))].map((type) => ({
+    value: type,
+  }))
 
   const handleSearchChange = (item) => {
     // item may be null if input has been cleared
@@ -115,7 +122,8 @@ export default function Home() {
             )}
 
             <ItemSortSearch
-              items={treatedItems}
+              items={filteredItems}
+              uniqueTypes={uniqueTypes}
               sorting={sorting}
               filters={filters}
               onChangeSearch={handleSearchChange}
@@ -124,7 +132,7 @@ export default function Home() {
             />
 
             <Grid container alignItems="center" justifyContent="flex-start">
-              {treatedItems.map((item) => (
+              {filteredItems.map((item) => (
                 <Item
                   itemData={item}
                   key={`${item.name}_${item.added}`}

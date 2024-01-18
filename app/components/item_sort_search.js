@@ -14,13 +14,13 @@ import { SORT_OPTIONS, ORDER_OPTIONS } from '../contants'
 
 function ItemSortSearch({
   items,
+  uniqueTypes,
   sorting,
   filters,
   onChangeSearch,
   onChangeSort,
   onChangeFilters,
 }) {
-  const uniqueTypes = [...new Set(items.map((item) => item.type))].map((type) => ({ value: type }))
   return (
     <Grid container alignItems="center" spacing={2}>
       <Grid
