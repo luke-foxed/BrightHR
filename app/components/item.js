@@ -13,7 +13,7 @@ const StyledItemButton = styled(Button)({
 function Item({ itemData, onItemClick }) {
   const { type, name, added } = itemData
   return (
-    <Grid xs={4} sm={3} md={2} sx={{ padding: '10px' }}>
+    <Grid item xs={4} sm={3} md={2} sx={{ padding: '10px' }}>
       <StyledItemButton onClick={() => onItemClick(itemData)}>
         <Grid container direction="column" item alignItems="center" justifyContent="center">
           <ItemIcon type={type} />

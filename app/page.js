@@ -18,7 +18,7 @@ const StyledContainerBox = styled(Box)({
 
 const StyledItemBox = styled(Box)({
   width: '100vw',
-  padding: '40px',
+  padding: '30px',
   minHeight: '100%',
   backgroundColor: '#d9d9d9',
   borderTopLeftRadius: '40px',
@@ -28,11 +28,12 @@ const StyledItemBox = styled(Box)({
 const fetcher = (url) => fetch(url).then((r) => r.json())
 
 export default function Home() {
-  const { data, isLoading } = useSWR('/api/folders', fetcher)
+  const { data, isLoading, isValidating } = useSWR('/api/folders', fetcher, { revalidateOnFocus: false })
   const [folderInView, setFolderInView] = useState(null)
   const [searchString, setSearchString] = useState('')
-  const [sorting, setSorting] = useState({ field: 'name', order: 'ascending' })
-  const [sortedItems, setSortedItems] = useState([])
+  const [sorting, setSorting] = useState({ field: 'name', order: 'ascend' })
+  const [filters, setFilters] = useState([])
+  const [treatedItems, setTreatedItems] = useState([])
 
   useEffect(() => {
     const { field, order } = sorting
@@ -48,7 +49,7 @@ export default function Home() {
 
     if (items && field !== '') {
       if (field === 'name' || field === 'type') {
-        items = items.sort((a, b) => (order === 'ascending'
+        items = items.sort((a, b) => (order === 'ascend'
           ? a[field].localeCompare(b[field])
           : b[field].localeCompare(a[field])))
       } else if (field === 'date') {
@@ -56,13 +57,18 @@ export default function Home() {
           // if we have no date (folders), put them at the start or end of the list
           const dateA = a.added ? new Date(a.added) : new Date(0)
           const dateB = b.added ? new Date(b.added) : new Date(0)
-          return order === 'ascending' ? dateA - dateB : dateB - dateA
+          return order === 'ascend' ? dateA - dateB : dateB - dateA
         })
       }
     }
 
-    setSortedItems([...items])
-  }, [data?.folders, folderInView?.files, searchString, sorting, sorting.field])
+    if (filters.length > 0) {
+      const typesToFilter = filters.map((filter) => filter.value)
+      items = items.filter((item) => typesToFilter.includes(item.type))
+    }
+
+    setTreatedItems([...items])
+  }, [data?.folders, folderInView?.files, filters, searchString, sorting, sorting.field])
 
   const handleSearchChange = (item) => {
     // item may be null if input has been cleared
@@ -84,6 +90,10 @@ export default function Home() {
     }
   }
 
+  const handleChangeFilters = (_, newValue) => {
+    setFilters(newValue)
+  }
+
   return (
     <main>
       <StyledContainerBox>
@@ -91,7 +101,7 @@ export default function Home() {
           <Typography variant="h5">BrightHR Tech Test</Typography>
         </Grid>
 
-        {isLoading ? (
+        {isLoading || isValidating ? (
           'Loading'
         ) : (
           <StyledItemBox>
@@ -105,14 +115,16 @@ export default function Home() {
             )}
 
             <ItemSortSearch
-              items={sortedItems}
+              items={treatedItems}
               sorting={sorting}
+              filters={filters}
               onChangeSearch={handleSearchChange}
               onChangeSort={handleChangeSorting}
+              onChangeFilters={handleChangeFilters}
             />
 
             <Grid container alignItems="center" justifyContent="flex-start">
-              {sortedItems.map((item) => (
+              {treatedItems.map((item) => (
                 <Item
                   itemData={item}
                   key={`${item.name}_${item.added}`}

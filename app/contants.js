@@ -7,6 +7,6 @@ export const SORT_OPTIONS = [
 ]
 
 export const ORDER_OPTIONS = [
-  { label: 'Ascending', value: 'ascending' },
-  { label: 'Descending', value: 'descending' },
+  { label: 'Ascend', value: 'ascend' },
+  { label: 'Descend', value: 'descend' },
 ]
