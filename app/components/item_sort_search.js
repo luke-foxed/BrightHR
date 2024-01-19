@@ -1,6 +1,32 @@
-import { Grid, Autocomplete, TextField, Box, Chip } from '@mui/material'
-import { Sort, ImportExport, FilterList } from '@mui/icons-material'
+import { Grid, Autocomplete, TextField, Box, Chip, styled, Popper } from '@mui/material'
+import { Sort, ImportExport, FilterList, Search } from '@mui/icons-material'
 import { SORT_OPTIONS, ORDER_OPTIONS } from '../contants'
+
+const StyledAutoComplete = styled(Autocomplete)({
+  minWidth: '160px',
+  width: '100%',
+  backgroundColor: '#fff',
+  borderRadius: '20px',
+  border: '2px solid #3db0f7',
+  fieldset: {
+    border: 'none',
+  },
+  svg: {
+    color: '#3db0f7',
+  },
+  '& .MuiFormLabel-root': {
+    marginTop: '-10px', // fixes label clipping with above border styles
+  },
+})
+
+const StyledPopper = styled(Popper)({
+  marginTop: '10px !important',
+  borderRadius: '20px',
+  boxShadow: '0px 0px 15px 0px rgba(0,0,0,0.15)',
+  '& .MuiPaper-root': {
+    borderRadius: '20px',
+  },
+})
 
 /* **** Grid Breakdown ****
  * With MUI grids, each 'line' consists of 12 units. 12+ pushes content to next line.
@@ -22,47 +48,54 @@ function ItemSortSearch({
   onChangeFilters,
 }) {
   return (
-    <Grid container alignItems="center" spacing={2}>
+    <Grid container alignItems="center" sx={{ padding: '30px 0' }} rowSpacing={2}>
       <Grid
+        container
         item
         xs={12}
         sm={12}
         md={4}
         justifyContent={{ xs: 'center', sm: 'center', md: 'flex-start' }}
       >
-        <Autocomplete
+        <StyledAutoComplete
           freeSolo
           size="small"
+          PopperComponent={StyledPopper}
           options={items.map((item) => item.name)}
           onInputChange={(_, val) => onChangeSearch(val)}
           renderInput={(params) => (
             <TextField
+              variant="outlined"
               onChange={(e) => onChangeSearch(e.target.value)}
+              placeholder="Search Items..."
               {...params}
-              label="Search Items..."
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: <Search />,
+              }}
             />
           )}
         />
       </Grid>
 
       {/* just to add some spacing on medium sized screens  */}
-      <Grid item xs={0} sm={0} md={3} />
+      <Grid item xs={0} sm={0} md={2} />
 
       <Grid
         container
         item
         xs={12}
         sm={12}
-        md={5}
+        md={6}
         spacing={2}
         justifyContent={{ xs: 'center', sm: 'center', md: 'flex-end' }}
       >
         <Grid container item xs={12} sm={12} md={4}>
-          <Autocomplete
+          <StyledAutoComplete
+            PopperComponent={StyledPopper}
             size="small"
-            sx={{ minWidth: '160px', width: '100%' }}
             multiple
-            limitTags={1}
+            limitTags={3}
             value={filters}
             onChange={onChangeFilters}
             options={uniqueTypes}
@@ -73,6 +106,7 @@ function ItemSortSearch({
             ))}
             renderInput={(params) => (
               <TextField
+                placeholder={filters.length > 0 ? '' : 'File Types...'}
                 {...params}
                 // slightly hacky but trying to keep the props that render multiple tags as well as
                 // adding my own 'startAdornment'
@@ -92,9 +126,9 @@ function ItemSortSearch({
         </Grid>
 
         <Grid container item xs={6} sm={6} md={4}>
-          <Autocomplete
+          <StyledAutoComplete
+            PopperComponent={StyledPopper}
             size="small"
-            sx={{ minWidth: '160px', width: '100%' }}
             value={sorting.field.charAt(0).toUpperCase() + sorting.field.slice(1)}
             isOptionEqualToValue={(option) => option.value === sorting.field}
             options={SORT_OPTIONS}
@@ -117,8 +151,8 @@ function ItemSortSearch({
         </Grid>
 
         <Grid container item xs={6} sm={6} md={4}>
-          <Autocomplete
-            sx={{ minWidth: '160px', width: '100%' }}
+          <StyledAutoComplete
+            PopperComponent={StyledPopper}
             size="small"
             value={sorting.order.charAt(0).toUpperCase() + sorting.order.slice(1)}
             isOptionEqualToValue={(option) => option.value === sorting.order}

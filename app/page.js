@@ -3,6 +3,7 @@
 import useSWR from 'swr'
 import { Typography, Grid, styled, Box, Button } from '@mui/material'
 import { useMemo, useState } from 'react'
+import Image from 'next/image'
 import Item from './components/item'
 import ItemSortSearch from './components/item_sort_search'
 
@@ -17,12 +18,13 @@ const StyledContainerBox = styled(Box)({
 })
 
 const StyledItemBox = styled(Box)({
-  width: '100vw',
+  width: '100.5vw', // hiding blue border on sides
   padding: '30px',
   minHeight: '100%',
-  backgroundColor: '#d9d9d9',
-  borderTopLeftRadius: '40px',
-  borderTopRightRadius: '40px',
+  backgroundColor: '#EAEAEA',
+  borderTopLeftRadius: '20px',
+  borderTopRightRadius: '20px',
+  border: '2px solid #3db0f7',
 })
 
 const fetcher = (url) => fetch(url).then((r) => r.json())
@@ -105,7 +107,13 @@ export default function Home() {
     <main>
       <StyledContainerBox>
         <Grid container item alignItems="center" justifyContent="center">
-          <Typography variant="h5">BrightHR Tech Test</Typography>
+          <Image
+            src="/logo.png"
+            alt="logo"
+            width="1920"
+            height="739"
+            style={{ width: '400px', objectFit: 'contain', height: 'auto' }}
+          />
         </Grid>
 
         {isLoading || isValidating ? (
@@ -131,7 +139,12 @@ export default function Home() {
               onChangeFilters={handleChangeFilters}
             />
 
-            <Grid container alignItems="center" justifyContent="flex-start">
+            <Grid
+              container
+              alignItems="center"
+              justifyContent="flex-start"
+              sx={{ maxHeight: '75%', overflow: 'scroll' }}
+            >
               {filteredItems.map((item) => (
                 <Item
                   itemData={item}

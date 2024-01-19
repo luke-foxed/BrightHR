@@ -52,6 +52,11 @@
     "added": "2018-11-06"
   },
   {
+    "type": "zip",
+    "name": "Really Long File Name",
+    "added": "2011-12-02"
+  },
+  {
     "type": "csv",
     "name": "Squad Breakdown",
     "added": "2023-04-06"
