@@ -51,7 +51,7 @@ function ItemSortSearch({
   onChangeFilters,
 }) {
   return (
-    <Grid container alignItems="center" sx={{ padding: '30px 0' }} rowSpacing={2}>
+    <Grid container alignItems="center" rowSpacing={2}>
       <Grid
         container
         item

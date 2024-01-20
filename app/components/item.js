@@ -1,5 +1,5 @@
-import { Typography, Grid, styled, Button, Tooltip, Box } from '@mui/material'
-import { CalendarMonth } from '@mui/icons-material'
+import { Typography, Grid, styled, Button, Tooltip, Box, useMediaQuery, useTheme } from '@mui/material'
+import { CalendarMonth, DynamicFeedOutlined } from '@mui/icons-material'
 import ItemIcon from './item_icon'
 
 const StyledItemButton = styled(Button)({
@@ -14,18 +14,18 @@ const StyledItemButton = styled(Button)({
   },
 })
 
-const StyledItem = styled(Box, { shouldForwardProp: (prop) => prop !== 'type' })(({ type }) => ({
+const StyledItem = styled(Box)({
   display: 'grid',
-  gridTemplateRows: type === 'folder' ? 'auto auto' : '50% 30% 20%',
+  gridTemplateRows: '50% 30% 20%',
   gridTemplateColumns: '100%',
   justifyContent: 'center',
   alignItems: 'center',
   height: '100%',
   borderRadius: '20px',
   width: '100%',
-}))
+})
 
-const ItemDateSection = styled(Box)({
+const ItemFooter = styled(Box)({
   backgroundColor: '#f5f5f5',
   borderRadius: '0 0 20px 20px', // Rounded corners for bottom left and right
   width: '100%',
@@ -38,39 +38,46 @@ const ItemDateSection = styled(Box)({
 })
 
 function TruncatedTitle({ type, title, maxLength }) {
-  if (title.length <= maxLength) {
-    return <Typography>{type === 'folder' ? title : `${title}.${type}`}</Typography>
+  const theme = useTheme()
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'))
+  // truncate more of the string if we are working with a small screen
+  const adjustedMaxLength = isSmallScreen ? maxLength - 4 : maxLength
+
+  if (title.length <= adjustedMaxLength) {
+    return (
+      <Typography sx={{ overflowWrap: 'break-word' }} variant="h6">
+        {type === 'folder' ? title : `${title}.${type}`}
+      </Typography>
+    )
   }
 
   const ellipsis = '...'
-  const halfMaxLength = Math.floor((maxLength - ellipsis.length) / 2)
+  const halfMaxLength = Math.floor((adjustedMaxLength - ellipsis.length) / 2)
   const truncatedTitle = title.substring(0, halfMaxLength) + ellipsis + title.substring(title.length - halfMaxLength)
 
   return (
     <Tooltip arrow placement="bottom" title={title}>
-      {type === 'folder' ? title : `${truncatedTitle}.${type}`}
+      <Typography sx={{ overflowWrap: 'break-word' }} variant="h6">
+        {type === 'folder' ? title : `${truncatedTitle}.${type}`}
+      </Typography>
     </Tooltip>
   )
 }
 
 function Item({ itemData, onItemClick }) {
-  const { type, name, added } = itemData
+  const { type, name, added, files } = itemData
   return (
-    <Grid item xs={4} sm={3} md={2} sx={{ height: '160px' }}>
+    <Grid item xs={4} sm={3} md={2} sx={{ height: '180px' }}>
       <StyledItemButton onClick={() => onItemClick(itemData)}>
-        <StyledItem type={type}>
+        <StyledItem>
           <ItemIcon type={type} />
-          <Typography>
-            <TruncatedTitle type={type} title={name} maxLength={16} />
-          </Typography>
-          {type !== 'folder' && (
-            <ItemDateSection>
-              <CalendarMonth fontSize="small" />
-              <Typography sx={{ marginBottom: '-4px' }} variant="p">
-                {added}
-              </Typography>
-            </ItemDateSection>
-          )}
+          <TruncatedTitle type={type} title={name} maxLength={20} />
+          <ItemFooter>
+            {type === 'folder' ? <DynamicFeedOutlined size="small" /> : <CalendarMonth fontSize="small" />}
+            <Typography sx={{ marginBottom: '-4px' }} variant="p">
+              {type === 'folder' ? `${files.length} Items` : added}
+            </Typography>
+          </ItemFooter>
         </StyledItem>
       </StyledItemButton>
     </Grid>

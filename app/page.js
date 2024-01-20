@@ -12,20 +12,19 @@ const StyledContainerBox = styled(Box)({
   display: 'grid',
   alignContent: 'center',
   justifyContent: 'center',
-  gridTemplateRows: '0.4fr 1fr',
+  gridTemplateRows: '0.35fr 1fr',
   height: '100vh',
-  gap: '10%',
   textAlign: 'center',
 })
 
 const StyledItemBox = styled(Box)({
-  width: '100.5vw', // hiding blue border on sides
   padding: '30px',
   minHeight: '100%',
   backgroundColor: '#EAEAEA',
   borderTopLeftRadius: '20px',
   borderTopRightRadius: '20px',
   border: '2px solid #3db0f7',
+  borderBottom: 'none',
 })
 
 const StyledBackButton = styled(Button)({
@@ -186,7 +185,7 @@ export default function Home() {
               container
               alignItems="center"
               justifyContent="flex-start"
-              sx={{ maxHeight: '75%', overflow: 'scroll' }}
+              sx={{ overflow: 'scroll', marginTop: '10px', maxHeight: '75%', minHeight: '40%', paddingBottom: '10px' }}
               spacing={2}
             >
               {filteredItems.map((item) => (
