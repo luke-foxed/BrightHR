@@ -9,6 +9,7 @@
     "react/jsx-filename-extension": "off",
     "react/prop-types": "off",
     "react/jsx-props-no-spreading": "off", // MUI makes use of prop spreading in some places
-    "import/no-extraneous-dependencies": "off"
+    "import/no-extraneous-dependencies": "off",
+    "max-len": ["error", { "code": 120 }]
   }
 }

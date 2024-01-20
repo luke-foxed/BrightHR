@@ -1,15 +1,23 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { InsertDriveFile, PictureAsPdf, StackedBarChart, Folder, FolderZip, Image } from '@mui/icons-material'
+import {
+  InsertDriveFileOutlined,
+  PictureAsPdfOutlined,
+  StackedBarChartOutlined,
+  FolderOutlined,
+  FolderZipOutlined,
+  ImageOutlined,
+} from '@mui/icons-material'
+import { getColorFromType } from '../utils'
 
-const ICON_SIZE = { style: { width: '50px', height: '50px' } }
+const ICON_SIZE = { width: '100%', height: '50px' }
 
 const ICON_MAPPING = {
-  default: <InsertDriveFile {...ICON_SIZE} />,
-  pdf: <PictureAsPdf {...ICON_SIZE} />,
-  csv: <StackedBarChart {...ICON_SIZE} />,
-  folder: <Folder {...ICON_SIZE} />,
-  zip: <FolderZip {...ICON_SIZE} />,
-  png: <Image {...ICON_SIZE} />,
+  default: <InsertDriveFileOutlined sx={{ color: getColorFromType('default'), ...ICON_SIZE }} />,
+  pdf: <PictureAsPdfOutlined sx={{ color: getColorFromType('pdf'), ...ICON_SIZE }} />,
+  csv: <StackedBarChartOutlined sx={{ color: getColorFromType('csv'), ...ICON_SIZE }} />,
+  folder: <FolderOutlined sx={{ color: getColorFromType('folder'), ...ICON_SIZE }} />,
+  zip: <FolderZipOutlined sx={{ color: getColorFromType('zip'), ...ICON_SIZE }} />,
+  png: <ImageOutlined sx={{ color: getColorFromType('png'), ...ICON_SIZE }} />,
 }
 
 function ItemIcon({ type }) {
