@@ -10,3 +10,5 @@ export const getColorFromType = (type) => {
     default: return '#f73db0'
   }
 }
+
+export const capitiseFirstLetter = (str) => str.charAt(0).toUpperCase() + str.slice(1)

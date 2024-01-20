@@ -1,6 +1,7 @@
 import { Grid, Autocomplete, TextField, Box, Chip, styled, Popper } from '@mui/material'
 import { Sort, ImportExport, FilterList, Search } from '@mui/icons-material'
 import { SORT_OPTIONS, ORDER_OPTIONS } from '../contants'
+import { capitiseFirstLetter } from '../utils'
 
 const StyledAutoComplete = styled(Autocomplete)({
   minWidth: '160px',
@@ -102,12 +103,12 @@ function ItemSortSearch({
             value={filters}
             onChange={onChangeFilters}
             options={uniqueTypes}
-            getOptionLabel={(option) => option.value}
+            getOptionLabel={(option) => capitiseFirstLetter(option.value)}
             isOptionEqualToValue={(option, selection) => option.value === selection.value}
             renderTags={(tag, getTagProps) => tag.map((option, index) => (
               <Chip
                 size="small"
-                label={option.value}
+                label={capitiseFirstLetter(option.value)}
                 {...getTagProps({ index })}
               />
             ))}
@@ -135,7 +136,7 @@ function ItemSortSearch({
           <StyledAutoComplete
             PopperComponent={StyledPopper}
             size="small"
-            value={sorting.field.charAt(0).toUpperCase() + sorting.field.slice(1)}
+            value={capitiseFirstLetter(sorting.field)}
             isOptionEqualToValue={(option) => option.value === sorting.field}
             options={SORT_OPTIONS}
             disableClearable
@@ -160,7 +161,7 @@ function ItemSortSearch({
           <StyledAutoComplete
             PopperComponent={StyledPopper}
             size="small"
-            value={sorting.order.charAt(0).toUpperCase() + sorting.order.slice(1)}
+            value={capitiseFirstLetter(sorting.order)}
             isOptionEqualToValue={(option) => option.value === sorting.order}
             options={ORDER_OPTIONS}
             disableClearable

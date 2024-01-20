@@ -118,6 +118,8 @@ export default function Home() {
   const handleItemClick = (item) => {
     if (item.type === 'folder') {
       setFolderInView(item)
+      // clear all filters
+      setFilters([])
     }
   }
 
