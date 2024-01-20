@@ -52,7 +52,13 @@ function ItemFilters({
   onChangeFilters,
 }) {
   return (
-    <Grid container alignItems="center" rowSpacing={2} sx={{ padding: '0 15px' }}>
+    <Grid
+      container
+      alignItems="center"
+      columnSpacing={2}
+      rowSpacing={2}
+      sx={{ padding: '0 15px' }}
+    >
       <Grid
         container
         item
@@ -91,7 +97,8 @@ function ItemFilters({
         xs={12}
         sm={12}
         md={6}
-        spacing={2}
+        columnSpacing={2}
+        rowSpacing={{ xs: 4, sm: 4, md: 2 }}
         justifyContent={{ xs: 'center', sm: 'center', md: 'flex-end' }}
       >
         <Grid container item xs={12} sm={12} md={4}>
