@@ -8,15 +8,15 @@ import {
   ImageOutlined,
 } from '@mui/icons-material'
 
-const ICON_SIZE = { width: '50px', height: '50px' }
+const ICON_SIZE = { width: '100%', height: '50px' }
 
 const ICON_MAPPING = {
-  default: <InsertDriveFileOutlined sx={{ color: '#D839CB', ...ICON_SIZE }} />,
-  pdf: <PictureAsPdfOutlined sx={{ color: '#D83939', ...ICON_SIZE }} />,
-  csv: <StackedBarChartOutlined sx={{ color: '#39D87E', ...ICON_SIZE }} />,
-  folder: <FolderOutlined sx={{ color: '#3949D8', ...ICON_SIZE }} />,
-  zip: <FolderZipOutlined sx={{ color: '#7E39D8', ...ICON_SIZE }} />,
-  png: <ImageOutlined sx={{ color: '#D8A639', ...ICON_SIZE }} />,
+  default: <InsertDriveFileOutlined sx={{ color: '#f73db0', ...ICON_SIZE }} />,
+  pdf: <PictureAsPdfOutlined sx={{ color: '#f73d60', ...ICON_SIZE }} />,
+  csv: <StackedBarChartOutlined sx={{ color: '#3df748', ...ICON_SIZE }} />,
+  folder: <FolderOutlined sx={{ color: '#6e3df7', ...ICON_SIZE }} />,
+  zip: <FolderZipOutlined sx={{ color: '#a53df7', ...ICON_SIZE }} />,
+  png: <ImageOutlined sx={{ color: '#f7d13d', ...ICON_SIZE }} />,
 }
 
 function ItemIcon({ type }) {

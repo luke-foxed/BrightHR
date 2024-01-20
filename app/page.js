@@ -1,9 +1,10 @@
 'use client'
 
 import useSWR from 'swr'
-import { Typography, Grid, styled, Box, Button } from '@mui/material'
+import { Typography, Grid, styled, Box, Button, Divider } from '@mui/material'
 import { useMemo, useState } from 'react'
 import Image from 'next/image'
+import { ArrowBack, FolderOutlined } from '@mui/icons-material'
 import Item from './components/item'
 import ItemSortSearch from './components/item_sort_search'
 
@@ -25,6 +26,16 @@ const StyledItemBox = styled(Box)({
   borderTopLeftRadius: '20px',
   borderTopRightRadius: '20px',
   border: '2px solid #3db0f7',
+})
+
+const StyledBackButton = styled(Button)({
+  borderRadius: '20px',
+  background: '#d6d6d6',
+  fontWeight: '900',
+  color: '#000',
+  '&:hover': {
+    boxShadow: 'inset 0px 0px 0px 2px #000',
+  },
 })
 
 const fetcher = (url) => fetch(url).then((r) => r.json())
@@ -121,12 +132,44 @@ export default function Home() {
         ) : (
           <StyledItemBox>
             {folderInView && (
-              <Grid container item alignItems="center" justifyContent="space-between">
-                <Button onClick={() => setFolderInView(null)}>Back</Button>
-                <Typography>{folderInView?.name}</Typography>
-                {/* div used purely to align the above two elements  */}
-                <div />
-              </Grid>
+              <>
+                <Grid container item alignItems="center" justifyContent="space-between">
+                  <StyledBackButton
+                    size="large"
+                    startIcon={<ArrowBack />}
+                    onClick={() => setFolderInView(null)}
+                  >
+                    <span style={{ marginBottom: '-4px' }}>Back</span>
+                  </StyledBackButton>
+                  <Grid
+                    container
+                    width="auto"
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="center"
+                    columnSpacing={2}
+                  >
+                    <Grid item>
+                      <FolderOutlined
+                        sx={{
+                          color: '#fff',
+                          borderRadius: '100%',
+                          bgcolor: '#3db0f7',
+                          height: '50px',
+                          width: '50px',
+                          padding: '10px',
+                        }}
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Typography variant="h5">{folderInView?.name}</Typography>
+                    </Grid>
+                  </Grid>
+                  {/* div used purely to align the above two elements  */}
+                  <div />
+                </Grid>
+                <Divider sx={{ margin: '15px' }} />
+              </>
             )}
 
             <ItemSortSearch
@@ -144,6 +187,7 @@ export default function Home() {
               alignItems="center"
               justifyContent="flex-start"
               sx={{ maxHeight: '75%', overflow: 'scroll' }}
+              spacing={2}
             >
               {filteredItems.map((item) => (
                 <Item

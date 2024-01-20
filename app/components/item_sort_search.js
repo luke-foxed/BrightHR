@@ -17,6 +17,9 @@ const StyledAutoComplete = styled(Autocomplete)({
   '& .MuiFormLabel-root': {
     marginTop: '-10px', // fixes label clipping with above border styles
   },
+  '& .MuiAutocomplete-input': {
+    padding: '2.5px 4px 0px 8px !important',
+  },
 })
 
 const StyledPopper = styled(Popper)({
@@ -108,8 +111,7 @@ function ItemSortSearch({
               <TextField
                 placeholder={filters.length > 0 ? '' : 'File Types...'}
                 {...params}
-                // slightly hacky but trying to keep the props that render multiple tags as well as
-                // adding my own 'startAdornment'
+                // trying to keep the props that render multiple tags as well as adding my own 'startAdornment'
                 InputProps={{
                   ...params.InputProps,
                   startAdornment: (
