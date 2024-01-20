@@ -6,9 +6,9 @@ import { useMemo, useState } from 'react'
 import Image from 'next/image'
 import { ArrowBack } from '@mui/icons-material'
 import Item from './components/item'
-import ItemSortSearch from './components/item_sort_search'
+import ItemFilters from './components/item_filters'
 
-const StyledContainerBox = styled(Box)({
+const RootContainer = styled(Box)({
   display: 'grid',
   alignContent: 'center',
   justifyContent: 'center',
@@ -18,7 +18,7 @@ const StyledContainerBox = styled(Box)({
   gap: '10px',
 })
 
-const StyledItemBox = styled(Box)({
+const ItemsContainer = styled(Box)({
   padding: '15px',
   minHeight: '100%',
   minWidth: '100vw',
@@ -29,7 +29,13 @@ const StyledItemBox = styled(Box)({
   borderBottom: 'none',
 })
 
-const StyledFolderHeader = styled(Box)({
+const ItemsGrid = styled(Grid)({
+  overflow: 'scroll',
+  marginTop: '10px',
+  paddingBottom: '10px',
+})
+
+const FolderHeader = styled(Box)({
   display: 'grid',
   alignContent: 'center',
   justifyContent: 'space-between',
@@ -38,7 +44,7 @@ const StyledFolderHeader = styled(Box)({
   marginBottom: '30px',
 })
 
-const StyledBackButton = styled(Button)({
+const FolderBackButton = styled(Button)({
   borderRadius: '20px',
   height: 'auto',
   background: '#d6d6d6',
@@ -48,6 +54,19 @@ const StyledBackButton = styled(Button)({
     boxShadow: 'inset 0px 0px 0px 2px #000',
   },
 })
+
+const Divider = styled(Box)({
+  height: '2px',
+  width: '85%',
+  background: '#3db0f7',
+  margin: '2px auto',
+})
+
+/* A few places in the app will have styling to change the padding/margin bottom
+ * of certain text/input items. This is because the 'Comfortaa' font being used
+ * from Google seems to have extra padding on the bottom that looks a bit jarring
+ * in certain MUI components.
+*/
 
 const fetcher = (url) => fetch(url).then((r) => r.json())
 
@@ -59,7 +78,8 @@ export default function Home() {
   const [filters, setFilters] = useState([])
 
   // this function is doing a lot of heavy lifting to apply all types of sorting and filtering
-  // available - it's been setup this way to allow for all filters/sorting to work with each other
+  // available - it's been setup this way to allow for all filters/sorting to work with each
+  // other... ideally, this filtering/sorting would be done on the API level
   const filteredItems = useMemo(() => {
     const { field, order } = sorting
     let items = data?.folders ? [...data.folders] : []
@@ -87,7 +107,7 @@ export default function Home() {
       })
     }
 
-    // then, if there are file type filters, apply those
+    // finally, if there are file type filters, apply those
     if (filters.length > 0) {
       const typesToFilter = filters.map((filter) => filter.value)
       items = items.filter((item) => typesToFilter.includes(item.type))
@@ -97,12 +117,12 @@ export default function Home() {
   }, [data?.folders, folderInView?.files, filters, searchString, sorting])
 
   // to keep track of all the file types we can filter off even when we've already applied filtering
-  const uniqueTypes = [...new Set(data?.folders.map((item) => item.type))].map((type) => ({
+  const uniqueTypes = useMemo(() => [...new Set(data?.folders.map((item) => item.type))].map((type) => ({
     value: type,
-  }))
+  })), [data?.folders])
 
   const handleSearchChange = (item) => {
-    // item may be null if input has been cleared
+    // item may be null if input has been cleared, set back to a string if so
     setSearchString(item ?? '')
   }
 
@@ -118,7 +138,7 @@ export default function Home() {
   const handleItemClick = (item) => {
     if (item.type === 'folder') {
       setFolderInView(item)
-      // clear all filters
+      // clear all filters when entering the folder view
       setFilters([])
     }
   }
@@ -129,7 +149,7 @@ export default function Home() {
 
   return (
     <main>
-      <StyledContainerBox>
+      <RootContainer>
         <Grid container item alignItems="center" justifyContent="center">
           <Image
             src="/logo.png"
@@ -147,9 +167,9 @@ export default function Home() {
           </div>
         ) : (
           <>
-            <ItemSortSearch
+            <ItemFilters
               items={filteredItems}
-              uniqueTypes={uniqueTypes}
+              fileTypes={uniqueTypes}
               sorting={sorting}
               filters={filters}
               onChangeSearch={handleSearchChange}
@@ -157,43 +177,31 @@ export default function Home() {
               onChangeFilters={handleChangeFilters}
             />
 
-            <StyledItemBox>
+            <ItemsContainer>
               {folderInView && (
-                <StyledFolderHeader>
-                  <StyledBackButton
+                <FolderHeader>
+                  <FolderBackButton
                     size="large"
                     startIcon={<ArrowBack />}
                     onClick={() => setFolderInView(null)}
                   >
                     <span style={{ marginBottom: '-4px' }}>Back</span>
-                  </StyledBackButton>
+                  </FolderBackButton>
                   <Grid container alignItems="center" justifyContent="center">
                     <Grid item>
                       <Typography variant="h5">{folderInView?.name}</Typography>
-                      <div
-                        style={{
-                          height: '2px',
-                          width: '85%',
-                          background: '#3db0f7',
-                          margin: '2px auto',
-                        }}
-                      />
+                      <Divider />
                     </Grid>
                   </Grid>
                   <div />
-                </StyledFolderHeader>
+                </FolderHeader>
               )}
 
-              <Grid
+              <ItemsGrid
                 container
                 alignItems="center"
                 justifyContent="flex-start"
-                sx={{
-                  overflow: 'scroll',
-                  marginTop: '10px',
-                  maxHeight: folderInView ? '85%' : '100%', // the folder header needs space to preserve 100vh
-                  paddingBottom: '10px',
-                }}
+                sx={{ maxHeight: folderInView ? '85%' : '100%' }} // the folder header needs space to preserve 100vh
                 spacing={2}
               >
                 {filteredItems.map((item) => (
@@ -203,11 +211,11 @@ export default function Home() {
                     onItemClick={handleItemClick}
                   />
                 ))}
-              </Grid>
-            </StyledItemBox>
+              </ItemsGrid>
+            </ItemsContainer>
           </>
         )}
-      </StyledContainerBox>
+      </RootContainer>
     </main>
   )
 }

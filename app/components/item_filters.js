@@ -42,9 +42,9 @@ const StyledPopper = styled(Popper)({
  * remaining 2 dropdowns fall to the next line, each taking 6/12 units on that line.
  */
 
-function ItemSortSearch({
+function ItemFilters({
   items,
-  uniqueTypes,
+  fileTypes,
   sorting,
   filters,
   onChangeSearch,
@@ -102,7 +102,7 @@ function ItemSortSearch({
             limitTags={1}
             value={filters}
             onChange={onChangeFilters}
-            options={uniqueTypes}
+            options={fileTypes}
             getOptionLabel={(option) => capitiseFirstLetter(option.value)}
             isOptionEqualToValue={(option, selection) => option.value === selection.value}
             renderTags={(tag, getTagProps) => tag.map((option, index) => (
@@ -144,6 +144,9 @@ function ItemSortSearch({
             renderInput={(params) => (
               <TextField
                 {...params}
+                // why does MUI have 'inputProps' and 'InputProps'??
+                inputProps={{ ...params.inputProps, readOnly: true }}
+                // eslint-disable-next-line react/jsx-no-duplicate-props
                 InputProps={{ ...params.InputProps, startAdornment: <Sort /> }}
                 label="Sort By"
               />
@@ -180,4 +183,4 @@ function ItemSortSearch({
   )
 }
 
-export default ItemSortSearch
+export default ItemFilters

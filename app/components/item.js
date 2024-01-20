@@ -3,7 +3,7 @@ import { CalendarMonth, DynamicFeedOutlined } from '@mui/icons-material'
 import ItemIcon from './item_icon'
 import { getColorFromType } from '../utils'
 
-const StyledItemButton = styled(Button, { shouldForwardProp: (props) => props !== 'type' })(
+const ItemButton = styled(Button, { shouldForwardProp: (props) => props !== 'type' })(
   ({ type }) => {
     const color = getColorFromType(type)
     return {
@@ -26,7 +26,7 @@ const StyledItemButton = styled(Button, { shouldForwardProp: (props) => props !=
   },
 )
 
-const StyledItem = styled(Box)({
+const ItemContainer = styled(Box)({
   display: 'grid',
   gridTemplateRows: '50% 30% 20%',
   gridTemplateColumns: '100%',
@@ -52,6 +52,7 @@ const ItemFooter = styled(Box)({
 
 function TruncatedTitle({ type, title, maxLength }) {
   const theme = useTheme()
+  // tooltips work on mobile but you need to long-press the title to see it
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'))
   // truncate more of the string if we are working with a small screen
   const adjustedMaxLength = isSmallScreen ? maxLength - 4 : maxLength
@@ -81,8 +82,8 @@ function Item({ itemData, onItemClick }) {
   const { type, name, added, files } = itemData
   return (
     <Grid item xs={4} sm={3} md={2} sx={{ height: '180px' }}>
-      <StyledItemButton onClick={() => onItemClick(itemData)} type={type}>
-        <StyledItem>
+      <ItemButton onClick={() => onItemClick(itemData)} type={type}>
+        <ItemContainer>
           <ItemIcon type={type} />
           <TruncatedTitle type={type} title={name} maxLength={20} />
           <ItemFooter className="item-footer">
@@ -95,8 +96,8 @@ function Item({ itemData, onItemClick }) {
               {type === 'folder' ? `${files.length} Items` : added}
             </Typography>
           </ItemFooter>
-        </StyledItem>
-      </StyledItemButton>
+        </ItemContainer>
+      </ItemButton>
     </Grid>
   )
 }
