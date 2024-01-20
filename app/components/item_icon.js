@@ -8,7 +8,7 @@ import {
   ImageOutlined,
 } from '@mui/icons-material'
 
-const ICON_SIZE = { width: '100%', height: '50px' }
+const ICON_SIZE = { width: '100%', height: '60px' }
 
 const ICON_MAPPING = {
   default: <InsertDriveFileOutlined sx={{ color: '#f73db0', ...ICON_SIZE }} />,

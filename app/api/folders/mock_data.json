@@ -22,6 +22,21 @@
         "type": "doc",
         "name": "Fuel allowances",
         "added": "2017-05-03"
+      },
+      {
+        "type": "pdf",
+        "name": "Travel Policies",
+        "added": "2017-06-15"
+      },
+      {
+        "type": "csv",
+        "name": "Receipts",
+        "added": "2017-07-20"
+      },
+      {
+        "type": "csv",
+        "name": "Expense Summary",
+        "added": "2017-08-10"
       }
     ]
   },
@@ -43,6 +58,16 @@
         "type": "mov",
         "name": "Welcome to the company!",
         "added": "2015-04-24"
+      },
+      {
+        "type": "png",
+        "name": "Team Building",
+        "added": "2018-03-10"
+      },
+      {
+        "type": "pdf",
+        "name": "Employee Recognition",
+        "added": "2019-02-15"
       }
     ]
   },
@@ -70,5 +95,40 @@
     "type": "zip",
     "name": "January Reports",
     "added": "2024-01-03"
+  },
+  {
+    "type": "pdf",
+    "name": "Training Manuals",
+    "added": "2019-08-21"
+  },
+  {
+    "type": "csv",
+    "name": "Budget Planning",
+    "added": "2020-04-15"
+  },
+  {
+    "type": "png",
+    "name": "Fundraiser Banner",
+    "added": "2021-07-05"
+  },
+  {
+    "type": "csv",
+    "name": "Quarterly Financials",
+    "added": "2022-09-10"
+  },
+  {
+    "type": "doc",
+    "name": "Meeting Minutes",
+    "added": "2023-02-28"
+  },
+  {
+    "type": "pdf",
+    "name": "Health and Safety Guidelines",
+    "added": "2020-11-12"
+  },
+  {
+    "type": "doc",
+    "name": "Product Roadmap 2022",
+    "added": "2022-12-12"
   }
 ]

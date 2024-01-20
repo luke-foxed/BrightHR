@@ -20,6 +20,7 @@ const StyledContainerBox = styled(Box)({
 const StyledItemBox = styled(Box)({
   padding: '30px',
   minHeight: '100%',
+  minWidth: '100vw',
   backgroundColor: '#EAEAEA',
   borderTopLeftRadius: '20px',
   borderTopRightRadius: '20px',
@@ -185,7 +186,13 @@ export default function Home() {
               container
               alignItems="center"
               justifyContent="flex-start"
-              sx={{ overflow: 'scroll', marginTop: '10px', maxHeight: '75%', minHeight: '40%', paddingBottom: '10px' }}
+              sx={{
+                overflow: 'scroll',
+                marginTop: '10px',
+                maxHeight: '70%',
+                minHeight: '40%',
+                paddingBottom: '10px',
+              }}
               spacing={2}
             >
               {filteredItems.map((item) => (

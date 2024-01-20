@@ -74,7 +74,7 @@ function Item({ itemData, onItemClick }) {
           <TruncatedTitle type={type} title={name} maxLength={20} />
           <ItemFooter>
             {type === 'folder' ? <DynamicFeedOutlined size="small" /> : <CalendarMonth fontSize="small" />}
-            <Typography sx={{ marginBottom: '-4px' }} variant="p">
+            <Typography sx={{ marginBottom: '-4px' }} variant="h6">
               {type === 'folder' ? `${files.length} Items` : added}
             </Typography>
           </ItemFooter>
