@@ -37,7 +37,17 @@
         "type": "csv",
         "name": "Expense Summary",
         "added": "2017-08-10"
-      }
+      },
+            {
+              "type": "pdf",
+              "name": "Expense Policy",
+              "added": "2016-04-03"
+            },
+            {
+              "type": "png",
+              "name": "McDonald's Reciept",
+              "added": "2023-01-01"
+            }
     ]
   },
   {
@@ -55,7 +65,7 @@
         "added": "2017-12-01"
       },
       {
-        "type": "mov",
+        "type": "png",
         "name": "Welcome to the company!",
         "added": "2015-04-24"
       },

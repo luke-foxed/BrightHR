@@ -51,7 +51,7 @@ function ItemSortSearch({
   onChangeFilters,
 }) {
   return (
-    <Grid container alignItems="center" rowSpacing={2}>
+    <Grid container alignItems="center" rowSpacing={2} sx={{ padding: '0 15px' }}>
       <Grid
         container
         item
@@ -98,14 +98,18 @@ function ItemSortSearch({
             PopperComponent={StyledPopper}
             size="small"
             multiple
-            limitTags={3}
+            limitTags={1}
             value={filters}
             onChange={onChangeFilters}
             options={uniqueTypes}
             getOptionLabel={(option) => option.value}
             isOptionEqualToValue={(option, selection) => option.value === selection.value}
             renderTags={(tag, getTagProps) => tag.map((option, index) => (
-              <Chip size="small" label={option.value} {...getTagProps({ index })} />
+              <Chip
+                size="small"
+                label={option.value}
+                {...getTagProps({ index })}
+              />
             ))}
             renderInput={(params) => (
               <TextField
