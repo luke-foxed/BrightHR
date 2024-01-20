@@ -52,13 +52,7 @@ function ItemFilters({
   onChangeFilters,
 }) {
   return (
-    <Grid
-      container
-      alignItems="center"
-      columnSpacing={2}
-      rowSpacing={2}
-      sx={{ padding: '0 15px' }}
-    >
+    <Grid container alignItems="center" columnSpacing={2} rowSpacing={2} sx={{ padding: '0 15px' }}>
       <Grid
         container
         item
@@ -179,6 +173,8 @@ function ItemFilters({
             renderInput={(params) => (
               <TextField
                 {...params}
+                inputProps={{ ...params.inputProps, readOnly: true }}
+                // eslint-disable-next-line react/jsx-no-duplicate-props
                 InputProps={{ ...params.InputProps, startAdornment: <ImportExport /> }}
                 label="Order By"
               />
