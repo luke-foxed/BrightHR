@@ -1,10 +1,10 @@
 'use client'
 
 import useSWR from 'swr'
-import { Typography, Grid, styled, Box, Button } from '@mui/material'
+import { Typography, Grid, styled, Box, Button, CircularProgress } from '@mui/material'
 import { useMemo, useState } from 'react'
 import Image from 'next/image'
-import { ArrowBack, FolderOutlined } from '@mui/icons-material'
+import { ArrowBack } from '@mui/icons-material'
 import Item from './components/item'
 import ItemSortSearch from './components/item_sort_search'
 
@@ -52,7 +52,7 @@ const StyledBackButton = styled(Button)({
 const fetcher = (url) => fetch(url).then((r) => r.json())
 
 export default function Home() {
-  const { data, isLoading, isValidating } = useSWR('/api/folders', fetcher, { revalidateOnFocus: false })
+  const { data, isLoading } = useSWR('/api/folders', fetcher, { revalidateOnFocus: false })
   const [folderInView, setFolderInView] = useState(null)
   const [searchString, setSearchString] = useState('')
   const [sorting, setSorting] = useState({ field: 'name', order: 'ascend' })
@@ -138,78 +138,72 @@ export default function Home() {
           />
         </Grid>
 
-        <ItemSortSearch
-          items={filteredItems}
-          uniqueTypes={uniqueTypes}
-          sorting={sorting}
-          filters={filters}
-          onChangeSearch={handleSearchChange}
-          onChangeSort={handleChangeSorting}
-          onChangeFilters={handleChangeFilters}
-        />
-
-        {isLoading || isValidating ? (
-          'Loading'
+        {isLoading ? (
+          <div>
+            <CircularProgress sx={{ color: '#3db0f7' }} />
+            <Typography>Loading your files...</Typography>
+          </div>
         ) : (
-          <StyledItemBox>
-            {folderInView && (
-              <StyledFolderHeader>
-                <StyledBackButton
-                  size="large"
-                  startIcon={<ArrowBack />}
-                  onClick={() => setFolderInView(null)}
-                >
-                  <span style={{ marginBottom: '-4px' }}>Back</span>
-                </StyledBackButton>
-                <Grid
-                  container
-                  width="auto"
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="center"
-                  columnSpacing={2}
-                >
-                  <Grid item>
-                    <FolderOutlined
-                      sx={{
-                        color: '#fff',
-                        borderRadius: '100%',
-                        bgcolor: '#3db0f7',
-                        height: '50px',
-                        width: '50px',
-                        padding: '10px',
-                      }}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Typography variant="h5">{folderInView?.name}</Typography>
-                  </Grid>
-                </Grid>
-                <div />
-              </StyledFolderHeader>
-            )}
+          <>
+            <ItemSortSearch
+              items={filteredItems}
+              uniqueTypes={uniqueTypes}
+              sorting={sorting}
+              filters={filters}
+              onChangeSearch={handleSearchChange}
+              onChangeSort={handleChangeSorting}
+              onChangeFilters={handleChangeFilters}
+            />
 
-            <Grid
-              container
-              alignItems="center"
-              justifyContent="flex-start"
-              sx={{
-                overflow: 'scroll',
-                marginTop: '10px',
-                maxHeight: folderInView ? '70%' : '100%', // the folder header needs space to preserve 100vh
-                paddingBottom: '10px',
-              }}
-              spacing={2}
-            >
-              {filteredItems.map((item) => (
-                <Item
-                  itemData={item}
-                  key={`${item.name}_${item.added}`}
-                  onItemClick={handleItemClick}
-                />
-              ))}
-            </Grid>
-          </StyledItemBox>
+            <StyledItemBox>
+              {folderInView && (
+                <StyledFolderHeader>
+                  <StyledBackButton
+                    size="large"
+                    startIcon={<ArrowBack />}
+                    onClick={() => setFolderInView(null)}
+                  >
+                    <span style={{ marginBottom: '-4px' }}>Back</span>
+                  </StyledBackButton>
+                  <Grid container alignItems="center" justifyContent="center">
+                    <Grid item>
+                      <Typography variant="h5">{folderInView?.name}</Typography>
+                      <div
+                        style={{
+                          height: '2px',
+                          width: '85%',
+                          background: '#3db0f7',
+                          margin: '2px auto',
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                  <div />
+                </StyledFolderHeader>
+              )}
+
+              <Grid
+                container
+                alignItems="center"
+                justifyContent="flex-start"
+                sx={{
+                  overflow: 'scroll',
+                  marginTop: '10px',
+                  maxHeight: folderInView ? '85%' : '100%', // the folder header needs space to preserve 100vh
+                  paddingBottom: '10px',
+                }}
+                spacing={2}
+              >
+                {filteredItems.map((item) => (
+                  <Item
+                    itemData={item}
+                    key={`${item.name}_${item.added}`}
+                    onItemClick={handleItemClick}
+                  />
+                ))}
+              </Grid>
+            </StyledItemBox>
+          </>
         )}
       </StyledContainerBox>
     </main>
