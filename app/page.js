@@ -1,18 +1,19 @@
 'use client'
 
 import useSWR from 'swr'
-import { Typography, Grid, styled, Box, Button, CircularProgress } from '@mui/material'
+import { Typography, Grid, styled, Box, Button, CircularProgress, IconButton } from '@mui/material'
 import { useMemo, useState } from 'react'
 import Image from 'next/image'
-import { ArrowBack } from '@mui/icons-material'
-import Item from './components/item'
+import { ArrowBack, GridViewOutlined, TableRowsOutlined } from '@mui/icons-material'
 import ItemFilters from './components/item_filters'
+import ItemTableView from './components/item_table_view'
+import ItemGridView from './components/item_grid_view'
 
 const RootContainer = styled(Box)({
   display: 'grid',
   alignContent: 'center',
   justifyContent: 'center',
-  gridTemplateRows: '0.4fr 0.1fr 1fr',
+  gridTemplateRows: '0.4fr 0.1fr 0.05fr 1fr',
   height: '100vh',
   textAlign: 'center',
   gap: '10px',
@@ -29,19 +30,13 @@ const ItemsContainer = styled(Box)({
   borderBottom: 'none',
 })
 
-const ItemsGrid = styled(Grid)({
-  overflow: 'scroll',
-  marginTop: '10px',
-  paddingBottom: '10px',
-})
-
 const FolderHeader = styled(Box)({
   display: 'grid',
   alignContent: 'center',
   justifyContent: 'space-between',
   gridTemplateColumns: '100px auto 100px',
   width: '100%',
-  marginBottom: '30px',
+  // marginBottom: '30px',
 })
 
 const FolderBackButton = styled(Button)({
@@ -100,6 +95,7 @@ export default function Home() {
   const [searchString, setSearchString] = useState('')
   const [sorting, setSorting] = useState({ field: 'name', order: 'ascend' })
   const [filters, setFilters] = useState([])
+  const [isTableView, setIsTableView] = useState(false)
 
   // this function is doing a lot of heavy lifting to apply all types of sorting and filtering
   // available - it's been setup this way to allow for all filters/sorting to work with each
@@ -183,10 +179,26 @@ export default function Home() {
               fileTypes={uniqueTypes}
               sorting={sorting}
               filters={filters}
+              isTableView={isTableView}
               onChangeSearch={handleSearchChange}
               onChangeSort={handleChangeSorting}
               onChangeFilters={handleChangeFilters}
             />
+
+            <Grid container item xs={12} justifyContent="flex-end" sx={{ padding: '0 15px' }}>
+              <IconButton
+                sx={{ color: isTableView ? '#3db0f7' : '#ccc' }}
+                onClick={() => setIsTableView(true)}
+              >
+                <TableRowsOutlined />
+              </IconButton>
+              <IconButton
+                sx={{ color: !isTableView ? '#3db0f7' : '#ccc' }}
+                onClick={() => setIsTableView(false)}
+              >
+                <GridViewOutlined />
+              </IconButton>
+            </Grid>
 
             <ItemsContainer>
               {folderInView && (
@@ -208,21 +220,15 @@ export default function Home() {
                 </FolderHeader>
               )}
 
-              <ItemsGrid
-                container
-                alignItems="center"
-                justifyContent="flex-start"
-                sx={{ maxHeight: folderInView ? '85%' : '100%' }} // the folder header needs space to preserve 100vh
-                spacing={2}
-              >
-                {filteredItems.map((item) => (
-                  <Item
-                    itemData={item}
-                    key={`${item.name}_${item.added}`}
-                    onItemClick={handleItemClick}
-                  />
-                ))}
-              </ItemsGrid>
+              {isTableView ? (
+                <ItemTableView items={filteredItems} onClickFolder={handleItemClick} />
+              ) : (
+                <ItemGridView
+                  items={filteredItems}
+                  folderInView={folderInView}
+                  onClickFolder={handleItemClick}
+                />
+              )}
             </ItemsContainer>
           </>
         )}

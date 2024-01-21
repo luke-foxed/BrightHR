@@ -50,6 +50,12 @@ const ItemFooter = styled(Box)({
   gap: '10px',
 })
 
+const ItemGrid = styled(Grid)({
+  overflow: 'scroll',
+  marginTop: '10px',
+  paddingBottom: '10px',
+})
+
 function TruncatedTitle({ type, title, maxLength }) {
   const theme = useTheme()
   // tooltips work on mobile but you need to long-press the title to see it
@@ -78,11 +84,11 @@ function TruncatedTitle({ type, title, maxLength }) {
   )
 }
 
-function Item({ itemData, onItemClick }) {
+function Item({ itemData, onClickFolder }) {
   const { type, name, added, files } = itemData
   return (
     <Grid item xs={4} sm={3} md={2} sx={{ height: '180px' }}>
-      <ItemButton onClick={() => onItemClick(itemData)} type={type}>
+      <ItemButton onClick={() => onClickFolder(itemData)} type={type}>
         <ItemContainer>
           <ItemIcon type={type} />
           <TruncatedTitle type={type} title={name} maxLength={20} />
@@ -102,4 +108,22 @@ function Item({ itemData, onItemClick }) {
   )
 }
 
-export default Item
+export default function ItemGridView({ items, folderInView, onClickFolder }) {
+  return (
+    <ItemGrid
+      container
+      alignItems="center"
+      justifyContent="flex-start"
+      sx={{ maxHeight: folderInView ? '85%' : '100%' }} // the folder header needs space to preserve 100vh
+      spacing={2}
+    >
+      {items.map((item) => (
+        <Item
+          itemData={item}
+          key={`${item.name}_${item.added}`}
+          onClickFolder={() => onClickFolder(item)}
+        />
+      ))}
+    </ItemGrid>
+  )
+}

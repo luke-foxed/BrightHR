@@ -47,6 +47,7 @@ function ItemFilters({
   fileTypes,
   sorting,
   filters,
+  isTableView,
   onChangeSearch,
   onChangeSort,
   onChangeFilters,
@@ -133,54 +134,58 @@ function ItemFilters({
           />
         </Grid>
 
-        <Grid container item xs={6} sm={6} md={4}>
-          <StyledAutoComplete
-            PopperComponent={StyledPopper}
-            size="small"
-            value={capitiseFirstLetter(sorting.field)}
-            isOptionEqualToValue={(option) => option.value === sorting.field}
-            options={SORT_OPTIONS}
-            disableClearable
-            onChange={(_, val) => onChangeSort(val, 'field')}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                // why does MUI have 'inputProps' and 'InputProps'??
-                inputProps={{ ...params.inputProps, readOnly: true }}
-                // eslint-disable-next-line react/jsx-no-duplicate-props
-                InputProps={{ ...params.InputProps, startAdornment: <Sort /> }}
-                label="Sort By"
+        {/* no need to show sorting and ordering on table view since the table can handle it  */}
+        {!isTableView && (
+          <>
+            <Grid container item xs={6} sm={6} md={4}>
+              <StyledAutoComplete
+                PopperComponent={StyledPopper}
+                size="small"
+                value={capitiseFirstLetter(sorting.field)}
+                isOptionEqualToValue={(option) => option.value === sorting.field}
+                options={SORT_OPTIONS}
+                disableClearable
+                onChange={(_, val) => onChangeSort(val, 'field')}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    // why does MUI have 'inputProps' and 'InputProps'??
+                    inputProps={{ ...params.inputProps, readOnly: true }}
+                    // eslint-disable-next-line react/jsx-no-duplicate-props
+                    InputProps={{ ...params.InputProps, startAdornment: <Sort /> }}
+                    label="Sort By"
+                  />
+                )}
+                renderOption={(props, option) => (
+                  <Box component="li" {...props}>
+                    {option.icon}
+                    {option.label}
+                  </Box>
+                )}
               />
-            )}
-            renderOption={(props, option) => (
-              <Box component="li" {...props}>
-                {option.icon}
-                {option.label}
-              </Box>
-            )}
-          />
-        </Grid>
-
-        <Grid container item xs={6} sm={6} md={4}>
-          <StyledAutoComplete
-            PopperComponent={StyledPopper}
-            size="small"
-            value={capitiseFirstLetter(sorting.order)}
-            isOptionEqualToValue={(option) => option.value === sorting.order}
-            options={ORDER_OPTIONS}
-            disableClearable
-            onChange={(_, val) => onChangeSort(val, 'order')}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                inputProps={{ ...params.inputProps, readOnly: true }}
-                // eslint-disable-next-line react/jsx-no-duplicate-props
-                InputProps={{ ...params.InputProps, startAdornment: <ImportExport /> }}
-                label="Order By"
+            </Grid>
+            <Grid container item xs={6} sm={6} md={4}>
+              <StyledAutoComplete
+                PopperComponent={StyledPopper}
+                size="small"
+                value={capitiseFirstLetter(sorting.order)}
+                isOptionEqualToValue={(option) => option.value === sorting.order}
+                options={ORDER_OPTIONS}
+                disableClearable
+                onChange={(_, val) => onChangeSort(val, 'order')}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    inputProps={{ ...params.inputProps, readOnly: true }}
+                    // eslint-disable-next-line react/jsx-no-duplicate-props
+                    InputProps={{ ...params.InputProps, startAdornment: <ImportExport /> }}
+                    label="Order By"
+                  />
+                )}
               />
-            )}
-          />
-        </Grid>
+            </Grid>
+          </>
+        )}
       </Grid>
     </Grid>
   )
