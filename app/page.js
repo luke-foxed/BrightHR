@@ -36,7 +36,6 @@ const FolderHeader = styled(Box)({
   justifyContent: 'space-between',
   gridTemplateColumns: '100px auto 100px',
   width: '100%',
-  // marginBottom: '30px',
 })
 
 const FolderBackButton = styled(Button)({
@@ -221,7 +220,11 @@ export default function Home() {
               )}
 
               {isTableView ? (
-                <ItemTableView items={filteredItems} onClickFolder={handleItemClick} />
+                <ItemTableView
+                  items={filteredItems}
+                  folderInView={folderInView}
+                  onClickFolder={handleItemClick}
+                />
               ) : (
                 <ItemGridView
                   items={filteredItems}

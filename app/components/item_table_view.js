@@ -71,7 +71,7 @@ const ItemsTable = styled(Table)({
   '& tbody': {
     '& td': {
       backgroundColor: 'white',
-      padding: '10px',
+      padding: '8px',
       '&:first-child': {
         borderRadius: '20px 0 0 20px',
       },
@@ -112,7 +112,7 @@ function TableHeader({ order, orderBy, onRequestSort }) {
   )
 }
 
-export default function ItemTableView({ items, onClickFolder }) {
+export default function ItemTableView({ items, folderInView, onClickFolder }) {
   const [order, setOrder] = useState('asc')
   const [orderBy, setOrderBy] = useState('name')
   const [page, setPage] = useState(0)
@@ -144,7 +144,8 @@ export default function ItemTableView({ items, onClickFolder }) {
   )
 
   return (
-    <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+
+    <Box sx={{ width: '100%', height: folderInView ? '85%' : '100%', display: 'flex', flexDirection: 'column' }}>
       <TableContainer sx={{ flex: 1, overflow: 'scroll' }}>
         <ItemsTable sx={{ minWidth: 750 }} stickyHeader size="medium">
           <TableHeader order={order} orderBy={orderBy} onRequestSort={handleRequestSort} />
