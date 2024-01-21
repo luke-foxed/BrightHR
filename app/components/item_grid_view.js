@@ -3,7 +3,7 @@ import { CalendarMonth, DynamicFeedOutlined } from '@mui/icons-material'
 import ItemIcon from './item_icon'
 import { getColorFromType } from '../utils'
 
-const StyledItemButton = styled(Button, { shouldForwardProp: (props) => props !== 'type' })(
+const ItemButton = styled(Button, { shouldForwardProp: (props) => props !== 'type' })(
   ({ type }) => {
     const color = getColorFromType(type)
     return {
@@ -26,7 +26,7 @@ const StyledItemButton = styled(Button, { shouldForwardProp: (props) => props !=
   },
 )
 
-const StyledItem = styled(Box)({
+const ItemContainer = styled(Box)({
   display: 'grid',
   gridTemplateRows: '50% 30% 20%',
   gridTemplateColumns: '100%',
@@ -50,8 +50,15 @@ const ItemFooter = styled(Box)({
   gap: '10px',
 })
 
+const ItemGrid = styled(Grid)({
+  overflow: 'scroll',
+  marginTop: '10px',
+  paddingBottom: '10px',
+})
+
 function TruncatedTitle({ type, title, maxLength }) {
   const theme = useTheme()
+  // tooltips work on mobile but you need to long-press the title to see it
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'))
   // truncate more of the string if we are working with a small screen
   const adjustedMaxLength = isSmallScreen ? maxLength - 4 : maxLength
@@ -77,12 +84,12 @@ function TruncatedTitle({ type, title, maxLength }) {
   )
 }
 
-function Item({ itemData, onItemClick }) {
+function Item({ itemData, onClickFolder }) {
   const { type, name, added, files } = itemData
   return (
     <Grid item xs={4} sm={3} md={2} sx={{ height: '180px' }}>
-      <StyledItemButton onClick={() => onItemClick(itemData)} type={type}>
-        <StyledItem>
+      <ItemButton onClick={() => onClickFolder(itemData)} type={type}>
+        <ItemContainer>
           <ItemIcon type={type} />
           <TruncatedTitle type={type} title={name} maxLength={20} />
           <ItemFooter className="item-footer">
@@ -95,10 +102,28 @@ function Item({ itemData, onItemClick }) {
               {type === 'folder' ? `${files.length} Items` : added}
             </Typography>
           </ItemFooter>
-        </StyledItem>
-      </StyledItemButton>
+        </ItemContainer>
+      </ItemButton>
     </Grid>
   )
 }
 
-export default Item
+export default function ItemGridView({ items, folderInView, onClickFolder }) {
+  return (
+    <ItemGrid
+      container
+      alignItems="center"
+      justifyContent="flex-start"
+      sx={{ maxHeight: folderInView ? '85%' : '100%' }} // the folder header needs space to preserve 100vh
+      spacing={2}
+    >
+      {items.map((item) => (
+        <Item
+          itemData={item}
+          key={`${item.name}_${item.added}`}
+          onClickFolder={() => onClickFolder(item)}
+        />
+      ))}
+    </ItemGrid>
+  )
+}

@@ -38,16 +38,16 @@
         "name": "Expense Summary",
         "added": "2017-08-10"
       },
-            {
-              "type": "pdf",
-              "name": "Expense Policy",
-              "added": "2016-04-03"
-            },
-            {
-              "type": "png",
-              "name": "McDonald's Reciept",
-              "added": "2023-01-01"
-            }
+      {
+        "type": "pdf",
+        "name": "Expense Policy",
+        "added": "2016-04-03"
+      },
+      {
+        "type": "png",
+        "name": "McDonald's Reciept",
+        "added": "2023-01-01"
+      }
     ]
   },
   {
@@ -88,7 +88,7 @@
   },
   {
     "type": "zip",
-    "name": "Really Long File Name",
+    "name": "Collection of user surveys",
     "added": "2011-12-02"
   },
   {

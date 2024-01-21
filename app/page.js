@@ -1,24 +1,26 @@
 'use client'
 
 import useSWR from 'swr'
-import { Typography, Grid, styled, Box, Button, CircularProgress } from '@mui/material'
+import { Typography, Grid, styled, Box, Button, CircularProgress, IconButton } from '@mui/material'
 import { useMemo, useState } from 'react'
 import Image from 'next/image'
-import { ArrowBack } from '@mui/icons-material'
-import Item from './components/item'
-import ItemSortSearch from './components/item_sort_search'
+import { ArrowBack, GridViewOutlined, TableRowsOutlined } from '@mui/icons-material'
+import ItemFilters from './components/item_filters'
+import ItemTableView from './components/item_table_view'
+import ItemGridView from './components/item_grid_view'
+import { getComparator, searchItems, sortItems } from './utils'
 
-const StyledContainerBox = styled(Box)({
+const RootContainer = styled(Box)({
   display: 'grid',
   alignContent: 'center',
   justifyContent: 'center',
-  gridTemplateRows: '0.4fr 0.1fr 1fr',
+  gridTemplateRows: '0.4fr 0.1fr 0.05fr 1fr',
   height: '100vh',
   textAlign: 'center',
   gap: '10px',
 })
 
-const StyledItemBox = styled(Box)({
+const ItemsContainer = styled(Box)({
   padding: '15px',
   minHeight: '100%',
   minWidth: '100vw',
@@ -29,16 +31,15 @@ const StyledItemBox = styled(Box)({
   borderBottom: 'none',
 })
 
-const StyledFolderHeader = styled(Box)({
+const FolderHeader = styled(Box)({
   display: 'grid',
   alignContent: 'center',
   justifyContent: 'space-between',
   gridTemplateColumns: '100px auto 100px',
   width: '100%',
-  marginBottom: '30px',
 })
 
-const StyledBackButton = styled(Button)({
+const FolderBackButton = styled(Button)({
   borderRadius: '20px',
   height: 'auto',
   background: '#d6d6d6',
@@ -49,6 +50,19 @@ const StyledBackButton = styled(Button)({
   },
 })
 
+const Divider = styled(Box)({
+  height: '2px',
+  width: '85%',
+  background: '#3db0f7',
+  margin: '2px auto',
+})
+
+/* A few places in the app will have styling to change the padding/margin bottom
+ * of certain text/input items. This is because the 'Comfortaa' font being used
+ * from Google seems to have extra padding on the bottom that looks a bit jarring
+ * in certain MUI components.
+*/
+
 const fetcher = (url) => fetch(url).then((r) => r.json())
 
 export default function Home() {
@@ -57,9 +71,11 @@ export default function Home() {
   const [searchString, setSearchString] = useState('')
   const [sorting, setSorting] = useState({ field: 'name', order: 'ascend' })
   const [filters, setFilters] = useState([])
+  const [isTableView, setIsTableView] = useState(false)
 
   // this function is doing a lot of heavy lifting to apply all types of sorting and filtering
-  // available - it's been setup this way to allow for all filters/sorting to work with each other
+  // available - it's been setup this way to allow for all filters/sorting to work with each
+  // other... ideally, this filtering/sorting would be done on the API level
   const filteredItems = useMemo(() => {
     const { field, order } = sorting
     let items = data?.folders ? [...data.folders] : []
@@ -71,38 +87,25 @@ export default function Home() {
 
     // then filter the items based on a search string if it exists
     if (searchString !== '') {
-      items = items.filter((item) => item.name.toLowerCase().includes(searchString.toLowerCase()))
+      items = searchItems(items, searchString)
     }
 
-    // then sort alphabetically on name or type - or sort by date
-    if (field === 'name' || field === 'type') {
-      items = items.sort((a, b) => (order === 'ascend'
-        ? a[field].localeCompare(b[field])
-        : b[field].localeCompare(a[field])))
-    } else if (field === 'date') {
-      items = items.sort((a, b) => {
-        const dateA = a.added ? new Date(a.added) : new Date(0)
-        const dateB = b.added ? new Date(b.added) : new Date(0)
-        return order === 'ascend' ? dateA - dateB : dateB - dateA
-      })
-    }
-
-    // then, if there are file type filters, apply those
     if (filters.length > 0) {
-      const typesToFilter = filters.map((filter) => filter.value)
-      items = items.filter((item) => typesToFilter.includes(item.type))
+      items = filteredItems(items, filters)
     }
+
+    items = sortItems(items, getComparator(order, field))
 
     return items
   }, [data?.folders, folderInView?.files, filters, searchString, sorting])
 
   // to keep track of all the file types we can filter off even when we've already applied filtering
-  const uniqueTypes = [...new Set(data?.folders.map((item) => item.type))].map((type) => ({
+  const uniqueTypes = useMemo(() => [...new Set(data?.folders.map((item) => item.type))].map((type) => ({
     value: type,
-  }))
+  })), [data?.folders])
 
   const handleSearchChange = (item) => {
-    // item may be null if input has been cleared
+    // item may be null if input has been cleared, set back to a string if so
     setSearchString(item ?? '')
   }
 
@@ -118,7 +121,7 @@ export default function Home() {
   const handleItemClick = (item) => {
     if (item.type === 'folder') {
       setFolderInView(item)
-      // clear all filters
+      // clear all filters when entering the folder view
       setFilters([])
     }
   }
@@ -129,7 +132,7 @@ export default function Home() {
 
   return (
     <main>
-      <StyledContainerBox>
+      <RootContainer>
         <Grid container item alignItems="center" justifyContent="center">
           <Image
             src="/logo.png"
@@ -147,67 +150,69 @@ export default function Home() {
           </div>
         ) : (
           <>
-            <ItemSortSearch
+            <ItemFilters
               items={filteredItems}
-              uniqueTypes={uniqueTypes}
+              fileTypes={uniqueTypes}
               sorting={sorting}
               filters={filters}
+              isTableView={isTableView}
               onChangeSearch={handleSearchChange}
               onChangeSort={handleChangeSorting}
               onChangeFilters={handleChangeFilters}
             />
 
-            <StyledItemBox>
+            <Grid container item xs={12} justifyContent="flex-end" sx={{ padding: '0 15px' }}>
+              <IconButton
+                sx={{ color: isTableView ? '#3db0f7' : '#ccc' }}
+                onClick={() => setIsTableView(true)}
+              >
+                <TableRowsOutlined />
+              </IconButton>
+              <IconButton
+                sx={{ color: !isTableView ? '#3db0f7' : '#ccc' }}
+                onClick={() => setIsTableView(false)}
+              >
+                <GridViewOutlined />
+              </IconButton>
+            </Grid>
+
+            <ItemsContainer>
               {folderInView && (
-                <StyledFolderHeader>
-                  <StyledBackButton
+                <FolderHeader>
+                  <FolderBackButton
                     size="large"
                     startIcon={<ArrowBack />}
                     onClick={() => setFolderInView(null)}
                   >
                     <span style={{ marginBottom: '-4px' }}>Back</span>
-                  </StyledBackButton>
+                  </FolderBackButton>
                   <Grid container alignItems="center" justifyContent="center">
                     <Grid item>
                       <Typography variant="h5">{folderInView?.name}</Typography>
-                      <div
-                        style={{
-                          height: '2px',
-                          width: '85%',
-                          background: '#3db0f7',
-                          margin: '2px auto',
-                        }}
-                      />
+                      <Divider />
                     </Grid>
                   </Grid>
                   <div />
-                </StyledFolderHeader>
+                </FolderHeader>
               )}
 
-              <Grid
-                container
-                alignItems="center"
-                justifyContent="flex-start"
-                sx={{
-                  overflow: 'scroll',
-                  marginTop: '10px',
-                  maxHeight: folderInView ? '85%' : '100%', // the folder header needs space to preserve 100vh
-                  paddingBottom: '10px',
-                }}
-                spacing={2}
-              >
-                {filteredItems.map((item) => (
-                  <Item
-                    itemData={item}
-                    key={`${item.name}_${item.added}`}
-                    onItemClick={handleItemClick}
-                  />
-                ))}
-              </Grid>
-            </StyledItemBox>
+              {isTableView ? (
+                <ItemTableView
+                  items={filteredItems}
+                  folderInView={folderInView}
+                  onClickFolder={handleItemClick}
+                />
+              ) : (
+                <ItemGridView
+                  items={filteredItems}
+                  folderInView={folderInView}
+                  onClickFolder={handleItemClick}
+                />
+              )}
+            </ItemsContainer>
           </>
         )}
-      </StyledContainerBox>
+      </RootContainer>
     </main>
   )
 }
