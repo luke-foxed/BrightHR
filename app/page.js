@@ -1,14 +1,24 @@
 'use client'
 
 import useSWR from 'swr'
-import { Typography, Grid, styled, Box, Button, CircularProgress, IconButton } from '@mui/material'
+import {
+  Typography,
+  Grid,
+  styled,
+  Box,
+  Button,
+  CircularProgress,
+  IconButton,
+  Alert,
+  Snackbar,
+} from '@mui/material'
 import { useMemo, useState } from 'react'
 import Image from 'next/image'
 import { ArrowBack, GridViewOutlined, TableRowsOutlined } from '@mui/icons-material'
 import ItemFilters from './components/item_filters'
 import ItemTableView from './components/item_table_view'
 import ItemGridView from './components/item_grid_view'
-import { getComparator, searchItems, sortItems } from './utils'
+import { filterItems, getComparator, searchItems, sortItems } from './utils'
 
 const RootContainer = styled(Box)({
   display: 'grid',
@@ -61,12 +71,12 @@ const Divider = styled(Box)({
  * of certain text/input items. This is because the 'Comfortaa' font being used
  * from Google seems to have extra padding on the bottom that looks a bit jarring
  * in certain MUI components.
-*/
+ */
 
 const fetcher = (url) => fetch(url).then((r) => r.json())
 
 export default function Home() {
-  const { data, isLoading } = useSWR('/api/folders', fetcher, { revalidateOnFocus: false })
+  const { data, isLoading, error } = useSWR('/api/folders', fetcher, { revalidateOnFocus: false })
   const [folderInView, setFolderInView] = useState(null)
   const [searchString, setSearchString] = useState('')
   const [sorting, setSorting] = useState({ field: 'name', order: 'ascend' })
@@ -91,7 +101,7 @@ export default function Home() {
     }
 
     if (filters.length > 0) {
-      items = filteredItems(items, filters)
+      items = filterItems(items, filters)
     }
 
     items = sortItems(items, getComparator(order, field))
@@ -100,9 +110,12 @@ export default function Home() {
   }, [data?.folders, folderInView?.files, filters, searchString, sorting])
 
   // to keep track of all the file types we can filter off even when we've already applied filtering
-  const uniqueTypes = useMemo(() => [...new Set(data?.folders.map((item) => item.type))].map((type) => ({
-    value: type,
-  })), [data?.folders])
+  const uniqueTypes = useMemo(
+    () => [...new Set(data?.folders.map((item) => item.type))].map((type) => ({
+      value: type,
+    })),
+    [data?.folders],
+  )
 
   const handleSearchChange = (item) => {
     // item may be null if input has been cleared, set back to a string if so
@@ -149,70 +162,77 @@ export default function Home() {
             <Typography>Loading your files...</Typography>
           </div>
         ) : (
-          <>
-            <ItemFilters
-              items={filteredItems}
-              fileTypes={uniqueTypes}
-              sorting={sorting}
-              filters={filters}
-              isTableView={isTableView}
-              onChangeSearch={handleSearchChange}
-              onChangeSort={handleChangeSorting}
-              onChangeFilters={handleChangeFilters}
-            />
+          !error && (
+            <>
+              <ItemFilters
+                items={filteredItems}
+                fileTypes={uniqueTypes}
+                sorting={sorting}
+                filters={filters}
+                isTableView={isTableView}
+                onChangeSearch={handleSearchChange}
+                onChangeSort={handleChangeSorting}
+                onChangeFilters={handleChangeFilters}
+              />
 
-            <Grid container item xs={12} justifyContent="flex-end" sx={{ padding: '0 15px' }}>
-              <IconButton
-                sx={{ color: isTableView ? '#3db0f7' : '#ccc' }}
-                onClick={() => setIsTableView(true)}
-              >
-                <TableRowsOutlined />
-              </IconButton>
-              <IconButton
-                sx={{ color: !isTableView ? '#3db0f7' : '#ccc' }}
-                onClick={() => setIsTableView(false)}
-              >
-                <GridViewOutlined />
-              </IconButton>
-            </Grid>
+              <Grid container item xs={12} justifyContent="flex-end" sx={{ padding: '0 15px' }}>
+                <IconButton
+                  sx={{ color: isTableView ? '#3db0f7' : '#ccc' }}
+                  onClick={() => setIsTableView(true)}
+                >
+                  <TableRowsOutlined />
+                </IconButton>
+                <IconButton
+                  sx={{ color: !isTableView ? '#3db0f7' : '#ccc' }}
+                  onClick={() => setIsTableView(false)}
+                >
+                  <GridViewOutlined />
+                </IconButton>
+              </Grid>
 
-            <ItemsContainer>
-              {folderInView && (
-                <FolderHeader>
-                  <FolderBackButton
-                    size="large"
-                    startIcon={<ArrowBack />}
-                    onClick={() => setFolderInView(null)}
-                  >
-                    <span style={{ marginBottom: '-4px' }}>Back</span>
-                  </FolderBackButton>
-                  <Grid container alignItems="center" justifyContent="center">
-                    <Grid item>
-                      <Typography variant="h5">{folderInView?.name}</Typography>
-                      <Divider />
+              <ItemsContainer>
+                {folderInView && (
+                  <FolderHeader>
+                    <FolderBackButton
+                      size="large"
+                      startIcon={<ArrowBack />}
+                      onClick={() => setFolderInView(null)}
+                    >
+                      <span style={{ marginBottom: '-4px' }}>Back</span>
+                    </FolderBackButton>
+                    <Grid container alignItems="center" justifyContent="center">
+                      <Grid item>
+                        <Typography variant="h5">{folderInView?.name}</Typography>
+                        <Divider />
+                      </Grid>
                     </Grid>
-                  </Grid>
-                  <div />
-                </FolderHeader>
-              )}
+                    <div />
+                  </FolderHeader>
+                )}
 
-              {isTableView ? (
-                <ItemTableView
-                  items={filteredItems}
-                  folderInView={folderInView}
-                  onClickFolder={handleItemClick}
-                />
-              ) : (
-                <ItemGridView
-                  items={filteredItems}
-                  folderInView={folderInView}
-                  onClickFolder={handleItemClick}
-                />
-              )}
-            </ItemsContainer>
-          </>
+                {isTableView ? (
+                  <ItemTableView
+                    items={filteredItems}
+                    folderInView={folderInView}
+                    onClickFolder={handleItemClick}
+                  />
+                ) : (
+                  <ItemGridView
+                    items={filteredItems}
+                    folderInView={folderInView}
+                    onClickFolder={handleItemClick}
+                  />
+                )}
+              </ItemsContainer>
+            </>
+          )
         )}
       </RootContainer>
+      <Snackbar open={error !== undefined} autoHideDuration={4000}>
+        <Alert severity="error" variant="filled" sx={{ width: '100%' }}>
+          Error fetching your files!
+        </Alert>
+      </Snackbar>
     </main>
   )
 }
