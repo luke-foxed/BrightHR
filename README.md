@@ -16,7 +16,6 @@ Tech test to view files & folders loaded from a mock data JSON file. This mock d
 ## Thoughts & Considerations
 
 - If this page was only ever to be used for viewing data with no mutating, static site generation within NextJS would be a nice choice in order to prerender the page to avoid frequent data fetching and improve the overall speed.
-- In hindsight, a table view may have been more suitable for the user experience here.
 - Regarding filtering, sorting & searching - this would more ideally be performed on the backend. With this setup, the `/api/folders` endpoint could be expanded to allow for query params to perform this filtering and sorting. Of course, it would only make sense to implement this approach if the data was stored in a DB rather than a mock data file. 
 
 ## Getting Started

@@ -19,8 +19,6 @@ const ICON_MAPPING = {
   png: <ImageOutlined sx={{ color: getColorFromType('png'), ...ICON_SIZE }} />,
 }
 
-function ItemIcon({ type }) {
+export default function ItemIcon({ type }) {
   return ICON_MAPPING[type] || ICON_MAPPING.default
 }
-
-export default ItemIcon

@@ -12,55 +12,8 @@ import {
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import ItemIcon from './item_icon'
-
-const TABLE_HEAD_CELLS = [
-  {
-    id: 'name',
-    numeric: false,
-    disablePadding: true,
-    label: 'Name',
-  },
-  {
-    id: 'type',
-    numeric: false,
-    disablePadding: false,
-    label: 'Type',
-  },
-  {
-    id: 'added',
-    numeric: false,
-    disablePadding: false,
-    label: 'Date Added',
-  },
-]
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1
-  }
-  return 0
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy)
-}
-
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index])
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0])
-    if (order !== 0) {
-      return order
-    }
-    return a[1] - b[1]
-  })
-  return stabilizedThis.map((el) => el[0])
-}
+import { TABLE_HEAD_CELLS } from '../contants'
+import { getComparator, sortItems } from '../utils'
 
 const ItemsTable = styled(Table)({
   borderCollapse: 'separate',
@@ -100,7 +53,7 @@ function TableHeader({ order, orderBy, onRequestSort }) {
             <TableSortLabel
               sx={{ fontSize: '16px' }}
               active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
+              direction={orderBy === headCell.id ? order : 'ascend'}
               onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
@@ -113,7 +66,7 @@ function TableHeader({ order, orderBy, onRequestSort }) {
 }
 
 export default function ItemTableView({ items, folderInView, onClickFolder }) {
-  const [order, setOrder] = useState('asc')
+  const [order, setOrder] = useState('ascend')
   const [orderBy, setOrderBy] = useState('name')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
@@ -121,8 +74,8 @@ export default function ItemTableView({ items, folderInView, onClickFolder }) {
   const rows = items.map((item) => ({ name: item.name, type: item.type, added: item.added, files: item.files }))
 
   const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc'
-    setOrder(isAsc ? 'desc' : 'asc')
+    const isAsc = orderBy === property && order === 'ascend'
+    setOrder(isAsc ? 'descend' : 'ascend')
     setOrderBy(property)
   }
 
@@ -136,7 +89,7 @@ export default function ItemTableView({ items, folderInView, onClickFolder }) {
   }
 
   const visibleRows = useMemo(
-    () => stableSort(rows, getComparator(order, orderBy)).slice(
+    () => sortItems(rows, getComparator(order, orderBy)).slice(
       page * rowsPerPage,
       page * rowsPerPage + rowsPerPage,
     ),

@@ -8,6 +8,7 @@ import { ArrowBack, GridViewOutlined, TableRowsOutlined } from '@mui/icons-mater
 import ItemFilters from './components/item_filters'
 import ItemTableView from './components/item_table_view'
 import ItemGridView from './components/item_grid_view'
+import { getComparator, searchItems, sortItems } from './utils'
 
 const RootContainer = styled(Box)({
   display: 'grid',
@@ -62,30 +63,6 @@ const Divider = styled(Box)({
  * in certain MUI components.
 */
 
-function searchItems(items, searchString) {
-  return items.filter((item) => item.name.toLowerCase().includes(searchString.toLowerCase()))
-}
-
-function sortItems(items, field, order) {
-  if (field === 'name' || field === 'type') {
-    return items.sort((a, b) => (order === 'ascend'
-      ? a[field].localeCompare(b[field])
-      : b[field].localeCompare(a[field])
-    ))
-  }
-  // otherwise, sort based on 'date'
-  return items.sort((a, b) => {
-    const dateA = a.added ? new Date(a.added) : new Date(0)
-    const dateB = b.added ? new Date(b.added) : new Date(0)
-    return order === 'ascend' ? dateA - dateB : dateB - dateA
-  })
-}
-
-function filterItems(items, filters) {
-  const typesToFilter = filters.map((filter) => filter.value)
-  return items.filter((item) => typesToFilter.includes(item.type))
-}
-
 const fetcher = (url) => fetch(url).then((r) => r.json())
 
 export default function Home() {
@@ -114,10 +91,10 @@ export default function Home() {
     }
 
     if (filters.length > 0) {
-      items = filterItems(items, filters)
+      items = filteredItems(items, filters)
     }
 
-    items = sortItems(items, field, order)
+    items = sortItems(items, getComparator(order, field))
 
     return items
   }, [data?.folders, folderInView?.files, filters, searchString, sorting])
