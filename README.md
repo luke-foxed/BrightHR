@@ -10,6 +10,7 @@ Tech test to view files & folders loaded from a mock data JSON file. This mock d
 
 - Viewing files and folders in a grid-view. Files will show their name, extension and date created. Folders will show their name and the number of files they contain.
 - Fully responsive view, the page should fit mobile screens by using Material UI's grid system as well as some responsive font settings specified in MUI's `createTheme` function.
+- Toggle between grid and table view for items
 - Data fetching using `swr` in order to show loading and/or error states when the data is being fetched.
 - Data can be searched, sorted and filtered as well as ordered ascending/descending. Sorting can be done on the file name, type and date created. Filtering can be done on the file type, where multiple types can be specified.
 
