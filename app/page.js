@@ -68,6 +68,30 @@ const Divider = styled(Box)({
  * in certain MUI components.
 */
 
+function searchItems(items, searchString) {
+  return items.filter((item) => item.name.toLowerCase().includes(searchString.toLowerCase()))
+}
+
+function sortItems(items, field, order) {
+  if (field === 'name' || field === 'type') {
+    return items.sort((a, b) => (order === 'ascend'
+      ? a[field].localeCompare(b[field])
+      : b[field].localeCompare(a[field])
+    ))
+  }
+  // otherwise, sort based on 'date'
+  return items.sort((a, b) => {
+    const dateA = a.added ? new Date(a.added) : new Date(0)
+    const dateB = b.added ? new Date(b.added) : new Date(0)
+    return order === 'ascend' ? dateA - dateB : dateB - dateA
+  })
+}
+
+function filterItems(items, filters) {
+  const typesToFilter = filters.map((filter) => filter.value)
+  return items.filter((item) => typesToFilter.includes(item.type))
+}
+
 const fetcher = (url) => fetch(url).then((r) => r.json())
 
 export default function Home() {
@@ -91,27 +115,14 @@ export default function Home() {
 
     // then filter the items based on a search string if it exists
     if (searchString !== '') {
-      items = items.filter((item) => item.name.toLowerCase().includes(searchString.toLowerCase()))
+      items = searchItems(items, searchString)
     }
 
-    // then sort alphabetically on name or type - or sort by date
-    if (field === 'name' || field === 'type') {
-      items = items.sort((a, b) => (order === 'ascend'
-        ? a[field].localeCompare(b[field])
-        : b[field].localeCompare(a[field])))
-    } else if (field === 'date') {
-      items = items.sort((a, b) => {
-        const dateA = a.added ? new Date(a.added) : new Date(0)
-        const dateB = b.added ? new Date(b.added) : new Date(0)
-        return order === 'ascend' ? dateA - dateB : dateB - dateA
-      })
-    }
-
-    // finally, if there are file type filters, apply those
     if (filters.length > 0) {
-      const typesToFilter = filters.map((filter) => filter.value)
-      items = items.filter((item) => typesToFilter.includes(item.type))
+      items = filterItems(items, filters)
     }
+
+    items = sortItems(items, field, order)
 
     return items
   }, [data?.folders, folderInView?.files, filters, searchString, sorting])

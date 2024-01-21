@@ -1,8 +1,32 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# BrightHR Tech Test - by Luke Fox
+
+## Live Website
+The live website can be accessed here: 
+https://bright-hr-test.vercel.app/
+
+## Description
+
+Tech test to view files & folders loaded from a mock data JSON file. This mock data is loaded in via the `/api/folders` endpoint just so I can simulate data loading on the front-end. The app is built with NextJS 14, using Material UI for styling. The `swr` library is used for data fetching. The features of this app include:
+
+- Viewing files and folders in a grid-view. Files will show their name, extension and date created. Folders will show their name and the number of files they contain.
+- Fully responsive view, the page should fit mobile screens by using Material UI's grid system as well as some responsive font settings specified in MUI's `createTheme` function.
+- Data fetching using `swr` in order to show loading and/or error states when the data is being fetched.
+- Data can be searched, sorted and filtered as well as ordered ascending/descending. Sorting can be done on the file name, type and date created. Filtering can be done on the file type, where multiple types can be specified.
+
+## Thoughts & Considerations
+
+- If this page was only ever to be used for viewing data with no mutating, static site generation within NextJS would be a nice choice in order to prerender the page to avoid frequent data fetching and improve the overall speed.
+- In hindsight, a table view may have been more suitable for the user experience here.
+- Regarding filtering, sorting & searching - this would more ideally be performed on the backend. With this setup, the `/api/folders` endpoint could be expanded to allow for query params to perform this filtering and sorting. Of course, it would only make sense to implement this approach if the data was stored in a DB rather than a mock data file. 
 
 ## Getting Started
 
-First, run the development server:
+First, install node modules with 
+```bash
+npm i 
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
@@ -14,23 +38,4 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
